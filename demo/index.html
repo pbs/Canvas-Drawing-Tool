@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>PBS Kids</title>
+    <script type="text/javascript" src="stickerbook.dist.js"></script>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div id="controls">
+      <div id="brushes">
+        <button name="eraser">Eraser</button>
+        <button name="marker">Marker</button>
+        <button name="pencil">Pencil</button>
+        <button name="spray">Spray</button>
+        <button name="example-pattern" class="pattern">Pattern</button>
+        <button name="fill">Fill</button>
+      </div>
+      <div>
+        <button class="brush_width" name="1">1px</button>
+        <button class="brush_width" name="10">10px</button>
+        <button class="color" name="#0000FF">Blue</button>
+        <button class="color" name="#FF0000">Red</button>
+      </div>
+      <div id="history">
+        <button id="undo">Undo</button>
+        <button id="redo">Redo</button>
+      </div>
+      <div>
+          <button id="set-background">+ BG</button>
+          <button id="remove-background">- BG</button>
+      </div>
+      <div>
+          <button id="clear">Clear</button>
+          <button id="save">Save</button>
+          <button id="destroy">Destroy</button>
+      </div>
+    </div>
+    <div id="stickerbook_container"></div>
+    <div id="stickers">
+      <img src="images/coin.svg" />
+      <img src="images/playCircle.svg" />
+      <img src="images/star.svg" />
+    </div>
+    <script type="text/javascript" src="demo.js"></script>
+  </body>
+</html>

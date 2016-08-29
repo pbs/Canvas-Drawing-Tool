@@ -1,0 +1,89 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+body, button {
+    font-size: 18px;
+    /* No selecting */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+div#controls {
+    width: 15vw;
+    float: left;
+}
+
+div#stickerbook_container {
+  display: inline-block;
+  border: 1px solid black;
+  width: 85vw;
+  height: 40vw;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+#controls > div {
+    text-align: center;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+#controls button {
+    width: 100%;
+}
+
+#exported-image {
+    border: 1px solid black;
+}
+
+#stickers {
+    text-align: center;
+}
+#stickers > img {
+    max-height: 5em;
+    border: 1px solid black;
+    margin-left: 0.25em;
+    margin-right: 0.25em;
+}
+
+#stickers > img.active {
+    border: 2px solid #333;
+    box-shadow: 0px 0px 5px #333;
+}
+
+@media(max-width: 760px) {
+    div#controls {
+        width: 25vw;
+    }
+
+    div#stickerbook_container {
+        width: 75vw;
+        height: 35.29vw; 
+    }
+}
+
+@media(max-width: 550px) {
+    div#controls {
+        width: 100vw;
+        display: -webkit-flex;
+        display: flex;
+        align-items: flex-end;
+    }
+
+    div#controls > div {
+        flex: 1;
+    }
+
+    div#stickerbook_container {
+        width: 100vw;
+        height: 44.4vw; 
+    }
+}
