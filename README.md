@@ -1,4 +1,5 @@
 # Canvas Drawing Tool
+[![Build Status](https://travis-ci.org/pbs/Canvas-Drawing-Tool.svg?branch=master)](https://travis-ci.org/pbs/Canvas-Drawing-Tool)
 
 ## Basic Usage
 To create a stickerbook, you'll first need to include the script on the page:
