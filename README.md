@@ -119,6 +119,11 @@ popup.focus();
 popup.print();
 ```
 
+The above example will attempt to print the image. You can download and save to camera roll with even less code:
+```javascript
+window.location.href = stickerbook.toDataURL().replace("image/png", "image/octet-stream");
+```
+
 ## Background Positioning
 The stickerbook provides background positioning methods, so you can adjust how the background looks as your canvas
 scales and grows. There are three options (currently):
