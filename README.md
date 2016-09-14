@@ -1,4 +1,5 @@
 # Canvas Drawing Tool
+[![Build Status](https://travis-ci.org/pbs/Canvas-Drawing-Tool.svg?branch=master)](https://travis-ci.org/pbs/Canvas-Drawing-Tool)
 
 ## Basic Usage
 To create a stickerbook, you'll first need to include the script on the page:
@@ -117,6 +118,11 @@ var popup = window.open();
 popup.document.write(html);
 popup.focus();
 popup.print();
+```
+
+The above example will attempt to print the image. You can download and save to camera roll with even less code:
+```javascript
+window.location.href = stickerbook.toDataURL().replace("image/png", "image/octet-stream");
 ```
 
 ## Background Positioning

@@ -582,6 +582,7 @@ class Stickerbook {
    */
   destroy() {
     window.removeEventListener('resize', this._handleResize);
+    this._canvas.dispose();
     delete this._canvas;
     delete this.backgroundManager;
     while(this.containerElement.firstChild) {
