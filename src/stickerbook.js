@@ -10,7 +10,6 @@ const {
   mouseDownHandler,
   pathCreatedHandler
 } = require('./event-handlers');
-const {isFabricEventName} = require('./util');
 
 const BRUSHES = {
   circle: CircleBrush,
@@ -518,13 +517,6 @@ class Stickerbook {
    * @return {Object} stickerbook
    */
   on(eventName, handler) {
-    // if it's a fabric event, register it on the fabric canvas
-    // http://fabricjs.com/docs/fabric.Canvas.html
-
-    if (!(isFabricEventName(eventName))) {
-      throw new Error(`unknown event: ${eventName}`);
-    }
-
     this._canvas.on(eventName, handler);
     return this;
   }
@@ -538,10 +530,6 @@ class Stickerbook {
    * @return {Object} stickerbook
    */
   off(eventName, handler) {
-    if (!(isFabricEventName(eventName))) {
-      throw new Error(`unknown event: ${eventName}`);
-    }
-
     this._canvas.off(eventName, handler);
     return this;
   }

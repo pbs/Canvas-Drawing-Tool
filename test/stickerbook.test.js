@@ -266,16 +266,6 @@ describe('Stickerbook', () => {
     stickerbook.on('mouse:down', callback);
   });
 
-  it('rejects custom callbacks for malformed event names', () => {
-    const stickerbook = createStickerbook();
-    const callback = function (evt) {
-      console.log(evt);
-    };
-    expect(
-      stickerbook.on.bind(stickerbook, 'mouse:sideways', callback)
-    ).toThrow('unknown event: mouse:sideways');
-  });
-
   it('removes custom callbacks', () => {
     const stickerbook = createStickerbook();
     const callback = function (evt) {
