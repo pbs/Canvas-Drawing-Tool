@@ -7,6 +7,7 @@ const PatternBrush = require('./pattern-brush');
 const PencilEraserBrush = require('./pencil-eraser-brush');
 const Promise = window.Promise || require('bluebird');
 const {
+  disableSelectabilityHandler,
   mouseDownHandler,
   pathCreatedHandler
 } = require('./event-handlers');
@@ -97,6 +98,9 @@ class Stickerbook {
     if (this._config.useDefaultEventHandlers) {
       canvas.on('mouse:down', mouseDownHandler.bind(this));
     }
+
+    // listen for objects to be added, so we can disable things from being selectable
+    canvas.on('object:added', disableSelectabilityHandler.bind(this));
 
     return canvas;
   }
