@@ -38,42 +38,7 @@ const isAlreadyRecordedPath = (evt, canvasHistory) => {
   return false;
 };
 
-/**
- * Utility function to determine if a given event name is a valid fabric event
- *
- * @param {string} eventName - candidate event name
- *
- * @returns {Boolean} true if event name is a fabric event, false if not
- */
-const isFabricEventName = (eventName) => {
-  const fabricEvents = [
-    'before:selection:cleared',
-    'mouse:down',
-    'mouse:move',
-    'mouse:out',
-    'mouse:over',
-    'mouse:up',
-    'object:modified',
-    'object:moving',
-    'object:rotating',
-    'object:scaling',
-    'object:selected',
-    'path:created',
-    'selection:cleared',
-    'selection:created',
-    'touch:drag',
-    'touch:gesture',
-    'touch:longpress',
-    'touch:orientation',
-    'touch:shake'
-  ];
-
-  return fabricEvents.indexOf(eventName) > -1;
-};
-
-
 module.exports = {
   isAlreadyRecordedPath: isAlreadyRecordedPath,
-  isFabricEventName: isFabricEventName,
   isLastInDragSeries: isLastInDragSeries
 };
