@@ -56,7 +56,21 @@ const pathCreatedHandler = function (evt) {
   }
 };
 
+const disableSelectabilityHandler = function (evt) {
+  if (evt.target instanceof fabric.Image) {
+    return;
+  }
+
+  // if the object isn't an image, then it'll be freehand drawing of some sort. Make that item not selectable
+  evt.target.selectable = false;
+  evt.target.hasControls = false;
+  evt.target.hasBorders = false;
+  evt.target.active = false;
+  this.triggerRender();
+};
+
 module.exports = {
+  disableSelectabilityHandler: disableSelectabilityHandler,
   mouseDownHandler: mouseDownHandler,
   pathCreatedHandler: pathCreatedHandler
 };
