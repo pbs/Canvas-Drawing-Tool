@@ -62,8 +62,8 @@ class Stickerbook {
     this._updateCanvasState();
 
     // responsive logic
-    this._handleResize = this._handleResize.bind(this);
-    window.addEventListener('resize', this._handleResize);
+    this.resize = this.resize.bind(this);
+    window.addEventListener('resize', this.resize);
 
     // mark destroyed state
     this.isDestroyed = false;
@@ -262,7 +262,7 @@ class Stickerbook {
    *
    * @returns {Object} Stickerbook
    */
-  _handleResize() {
+  resize() {
     // theoretically, fabric supports setting CSS dimensions directly
     // (http://fabricjs.com/docs/fabric.Canvas.html#setDimensions)
     // however, using that mechanism seems to result in undesireable
@@ -581,7 +581,7 @@ class Stickerbook {
    * @return {undefined}
    */
   destroy() {
-    window.removeEventListener('resize', this._handleResize);
+    window.removeEventListener('resize', this.resize);
     this._canvas.dispose();
     delete this._canvas;
     delete this.backgroundManager;
