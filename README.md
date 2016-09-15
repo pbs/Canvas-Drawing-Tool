@@ -72,6 +72,12 @@ to maintain aspect ratio, so that scaling preserves sizes properly. We'll loosen
 resizing algorithm. However, in the meantime the demo code stylesheet has an example of how to do this.
 
 ## Available Methods
+### Rerendering
+You can always re-render the stickerbook by hand using the `triggerRender` method. This will simply call the internal
+fabric instance's `renderAll`. However, if you'd like to not only re-render but also want to recalculate positioning
+(due to a change in the container size etc.), you can call `resize` which will recalculate positioning for each canvas
+element and then redraw.
+
 ### Undo and Redo
 Any operation that was previously done can be undone (or redone) via the `undo` and `redo` method respectively:
 ```javascript
