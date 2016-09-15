@@ -1,3 +1,4 @@
+const {fabric} = require('fabric');
 const {
   isAlreadyRecordedPath
 } = require('./util');
@@ -61,7 +62,8 @@ const disableSelectabilityHandler = function (evt) {
     return;
   }
 
-  // if the object isn't an image, then it'll be freehand drawing of some sort. Make that item not selectable
+  // if the object isn't an image, then it'll be freehand drawing of some sort. Make that item not
+  // selectable
   evt.target.selectable = false;
   evt.target.hasControls = false;
   evt.target.hasBorders = false;
