@@ -7,6 +7,11 @@ To create a stickerbook, you'll first need to include the script on the page:
 <script src="node_modules/pbs-kids-canvas-drawing/dist/stickerbook.dist.js"></script>
 ```
 
+If you'd like, there's also an unminified debug build available too if you need to debug anything:
+```html
+<script src="node_modules/pbs-kids-canvas-drawing/dist/stickerbook.combined.js"></script>
+```
+
 Now, create a containing element for the stickerbook and instantiate
 ```javascript
 var container = document.getElementById('stickerbook-container');
@@ -72,6 +77,12 @@ to maintain aspect ratio, so that scaling preserves sizes properly. We'll loosen
 resizing algorithm. However, in the meantime the demo code stylesheet has an example of how to do this.
 
 ## Available Methods
+### Rerendering
+You can always re-render the stickerbook by hand using the `triggerRender` method. This will simply call the internal
+fabric instance's `renderAll`. However, if you'd like to not only re-render but also want to recalculate positioning
+(due to a change in the container size etc.), you can call `resize` which will recalculate positioning for each canvas
+element and then redraw.
+
 ### Undo and Redo
 Any operation that was previously done can be undone (or redone) via the `undo` and `redo` method respectively:
 ```javascript

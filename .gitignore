@@ -40,5 +40,5 @@ jspm_packages
 
 # stickerbook-sandbox specific
 
-demo/*dist*
+demo/*combined*
 test/stickerbook.test.bundle.js

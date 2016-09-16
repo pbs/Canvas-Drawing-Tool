@@ -7,10 +7,10 @@ const PatternBrush = require('./pattern-brush');
 const PencilEraserBrush = require('./pencil-eraser-brush');
 const Promise = window.Promise || require('bluebird');
 const {
+  disableSelectabilityHandler,
   mouseDownHandler,
   pathCreatedHandler
 } = require('./event-handlers');
-const {isFabricEventName} = require('./util');
 
 const BRUSHES = {
   circle: CircleBrush,
@@ -62,8 +62,8 @@ class Stickerbook {
     this._updateCanvasState();
 
     // responsive logic
-    this._handleResize = this._handleResize.bind(this);
-    window.addEventListener('resize', this._handleResize);
+    this.resize = this.resize.bind(this);
+    window.addEventListener('resize', this.resize);
 
     // mark destroyed state
     this.isDestroyed = false;
@@ -97,6 +97,9 @@ class Stickerbook {
     if (this._config.useDefaultEventHandlers) {
       canvas.on('mouse:down', mouseDownHandler.bind(this));
     }
+
+    // listen for objects to be added, so we can disable things from being selectable
+    canvas.on('object:added', disableSelectabilityHandler.bind(this));
 
     return canvas;
   }
@@ -262,7 +265,7 @@ class Stickerbook {
    *
    * @returns {Object} Stickerbook
    */
-  _handleResize() {
+  resize() {
     // theoretically, fabric supports setting CSS dimensions directly
     // (http://fabricjs.com/docs/fabric.Canvas.html#setDimensions)
     // however, using that mechanism seems to result in undesireable
@@ -518,13 +521,6 @@ class Stickerbook {
    * @return {Object} stickerbook
    */
   on(eventName, handler) {
-    // if it's a fabric event, register it on the fabric canvas
-    // http://fabricjs.com/docs/fabric.Canvas.html
-
-    if (!(isFabricEventName(eventName))) {
-      throw new Error(`unknown event: ${eventName}`);
-    }
-
     this._canvas.on(eventName, handler);
     return this;
   }
@@ -538,10 +534,6 @@ class Stickerbook {
    * @return {Object} stickerbook
    */
   off(eventName, handler) {
-    if (!(isFabricEventName(eventName))) {
-      throw new Error(`unknown event: ${eventName}`);
-    }
-
     this._canvas.off(eventName, handler);
     return this;
   }
@@ -581,7 +573,7 @@ class Stickerbook {
    * @return {undefined}
    */
   destroy() {
-    window.removeEventListener('resize', this._handleResize);
+    window.removeEventListener('resize', this.resize);
     this._canvas.dispose();
     delete this._canvas;
     delete this.backgroundManager;
