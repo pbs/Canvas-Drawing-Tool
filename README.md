@@ -7,6 +7,11 @@ To create a stickerbook, you'll first need to include the script on the page:
 <script src="node_modules/pbs-kids-canvas-drawing/dist/stickerbook.dist.js"></script>
 ```
 
+If you'd like, there's also an unminified debug build available too if you need to debug anything:
+```html
+<script src="node_modules/pbs-kids-canvas-drawing/dist/stickerbook.combined.js"></script>
+```
+
 Now, create a containing element for the stickerbook and instantiate
 ```javascript
 var container = document.getElementById('stickerbook-container');
