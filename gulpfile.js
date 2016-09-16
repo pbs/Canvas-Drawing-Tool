@@ -14,12 +14,18 @@ const path = {
   ENTRY_POINT: './index.js'
 };
 
-const bundle = (entryPoint, outputFilename, outputDestinations) => {
-  var inProcessBundle = browserify(entryPoint)
+const bundle = (entryPoint, outputFilename, outputDestinations, debug) => {
+  // default options for debug mode
+  debug = debug === true ? true : false;
+
+  var inProcessBundle = browserify(entryPoint, { debug: debug })
     .transform('babelify')
     .bundle()
-    .pipe(source(outputFilename))
-    .pipe(streamify(uglify()));
+    .pipe(source(outputFilename));
+
+  if(!debug) {
+    inProcessBundle = inProcessBundle.pipe(streamify(uglify()));
+  }
 
   outputDestinations.forEach(destination => {
     inProcessBundle = inProcessBundle.pipe(gulp.dest(destination));
