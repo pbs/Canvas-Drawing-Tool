@@ -23,7 +23,9 @@ const createValidConfig = () => {
       'pencil',
       'spray'
     ],
-    enabledBackgrounds: ['http://www.example.com/images/A.png'],
+    background: {
+      enabled: ['http://www.example.com/images/A.png'],
+    },
     colors: ['#0000FF', '#FF0000'],
     useDefaultEventHandlers: true
   };
@@ -231,7 +233,7 @@ describe('Stickerbook', () => {
 
   it('sets a default background image', () => {
     let config = createValidConfig();
-    config.defaultBackground = 'http://www.example.com/images/A.png';
+    config.background.default = 'http://www.example.com/images/A.png';
     const stickerbook = new Stickerbook(config);
     expect(stickerbook.getBackground()).toEqual('http://www.example.com/images/A.png');
   });

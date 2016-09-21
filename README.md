@@ -27,14 +27,16 @@ var stickerBook = new Stickerbook({
     'path/to/other/image.png'
   ],
 
-  // the backgrounds that can be set
-  enabledBackgrounds: [
-    'first/bg.png',
-    'other/bg.png'
-  ],
-
-  // the default background to use (can be null for empty background)
-  defaultBackground: 'first/bg.png',
+  background: {
+    // the backgrounds that can be set
+    enabled: [
+        'first/bg.png',
+        'other/bg.png'
+    ],
+    
+    // the default background to use (can be null for empty background)
+    default: 'first/bg.png'
+  }
 
   // The available brush widths (in pixels)
   brushWidths: [

@@ -55,8 +55,8 @@ class Stickerbook {
     // (http://stackoverflow.com/questions/10581460)
     this._canvas = this._initializeFabricCanvas(this.containerElement);
 
-    if (this._config.defaultBackground) {
-      this.setBackground(this._config.defaultBackground);
+    if (this._config.background && this._config.background.default) {
+      this.setBackground(this._config.background.default);
     }
 
     this._updateCanvasState();
@@ -460,7 +460,11 @@ class Stickerbook {
       return this;
     }
 
-    var backgroundImageIsEnabled = this._config.enabledBackgrounds.indexOf(imageUrl) > -1;
+    if(!this._config.background || !(this._config.background.enabled instanceof Array)) {
+      return this;
+    }
+
+    var backgroundImageIsEnabled = this._config.background.enabled.indexOf(imageUrl) > -1;
 
     if(!backgroundImageIsEnabled) {
       throw new Error(`${imageUrl} is not a permitted background`);
