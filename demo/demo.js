@@ -19,10 +19,10 @@ var stickerbook = new Stickerbook({
     host + 'images/playCircle.svg',
     host + 'images/star.svg'
   ],
-  enabledBackgrounds: [
-    host + 'images/background.png'
-  ],
-  defaultBackground: null,
+  background: {
+    enabled: [ host + 'images/background.png' ],
+    default: host + 'images/background.png'
+  },
   brushWidths: [1, 10, 50],
   brushes: [
     'eraser',
