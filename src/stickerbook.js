@@ -55,7 +55,7 @@ class Stickerbook {
     // (http://stackoverflow.com/questions/10581460)
     this._canvas = this._initializeFabricCanvas(this.containerElement);
 
-    if (this._config.background.default) {
+    if (this._config.background && this._config.background.default) {
       this.setBackground(this._config.background.default);
     }
 
@@ -457,6 +457,10 @@ class Stickerbook {
   setBackground(imageUrl) {
     if(!imageUrl) {
       this.clearBackground();
+      return this;
+    }
+
+    if(!this._config.background || !(this._config.background.enabled instanceof Array)) {
       return this;
     }
 
