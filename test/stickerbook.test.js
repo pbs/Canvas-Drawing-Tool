@@ -7,6 +7,9 @@ const sinon = require('sinon');
 const Stickerbook = require('../src/stickerbook');
 const historyFixture = require('./data/historyFixture.json');
 
+// pull in other tests
+require('./config-validator.test.js');
+
 const createValidConfig = () => {
   return {
     container: document.createElement('div'),
