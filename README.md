@@ -36,29 +36,28 @@ var stickerBook = new Stickerbook({
     
     // the default background to use (can be null for empty background)
     default: 'first/bg.png'
-  }
+  },
 
-  // The available brush widths (in pixels)
-  brushWidths: [
-    1,
-    10
-  ],
+  brush: {
+    // The available brushes. The list below has the all the currently available ones (at the time of writing)
+    enabled: [
+      'eraser',
+      'fill',
+      'marker',
+      'pattern',
+      'pencil',
+      'spray'
+    ], 
+    
+    // The available brush widths (in pixels)
+    widths: [1, 10],
 
-  // The available brushes. The list below has the all the currently available ones (at the time of writing)
-  brushes: [
-   'eraser',
-   'fill',
-   'marker',
-   'pattern',
-   'pencil',
-   'spray'
-  ],
-
-  // The available colors to use, can be any valid CSS color
-  colors: [
-    '#0000FF',
-    '#FF0000'
-  ],
+    // The available colors to use, can be any valid CSS color
+    colors: [
+      '#0000FF',
+      '#FF0000'
+    ]
+  },
 
   // Whether or not to enable touch events
   mobileEnabled: true,

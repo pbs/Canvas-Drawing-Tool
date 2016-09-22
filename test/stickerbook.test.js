@@ -15,18 +15,14 @@ const createValidConfig = () => {
       'http://www.example.com/images/B.png',
       'http://www.example.com/images/C.png'
     ],
-    brushWidths: [1, 10],
-    brushes: [
-      'eraser',
-      'fill',
-      'marker',
-      'pencil',
-      'spray'
-    ],
+    brush: {
+      widths: [1, 10],
+      enabled: ['eraser', 'fill', 'marker', 'pencil', 'spray'],
+      colors: ['#0000FF', '#FF0000'],
+    },
     background: {
       enabled: ['http://www.example.com/images/A.png'],
     },
-    colors: ['#0000FF', '#FF0000'],
     useDefaultEventHandlers: true
   };
 };
