@@ -34,23 +34,23 @@ class Stickerbook {
    */
   constructor(config) {
     // assign default to the config, if it's missing
-    config = this._applyDefaultConfigs(config);
+    const configWithDefaults = this._applyDefaultConfigs(config);
 
-    this._validateConfig(config);
+    this._validateConfig(configWithDefaults);
 
-    this._config = config;
+    this._config = configWithDefaults
 
     this.state = {
-      brush: config.brushes[0],
-      brushWidth: config.brushWidths[0],
-      color: config.colors[0],
+      brush: configWithDefaults.brushes[0],
+      brushWidth: configWithDefaults.brushWidths[0],
+      color: configWithDefaults.colors[0],
       drawing: true,
       sticker: null,
       historyIndex: null
     };
     this.history = [];
 
-    this.containerElement = config.container;
+    this.containerElement = configWithDefaults.container;
 
     // the background canvas
     this.backgroundManager = new BackgroundManager(this.containerElement);
