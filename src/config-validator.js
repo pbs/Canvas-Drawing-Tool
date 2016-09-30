@@ -18,8 +18,10 @@ const get = function (object, key) {
   return pointer;
 };
 
-const validateSingle = function (value, type) {
-  if (type === 'Array') {
+const validateSingle = function (value, type, optional) {
+  if(value === undefined && optional === true) {
+    return true;
+  } else if (type === 'Array') {
     return value instanceof Array;
   } else if (type === 'String') {
     return typeof value === 'string';
@@ -60,7 +62,7 @@ const validate = function (object, rules) {
   return Object.keys(rules)
     .filter((key) => {
       var value = get(object, key);
-      return !validateSingle(value, rules[key].type);
+      return !validateSingle(value, rules[key].type, rules[key].optional);
     })
     .map((key) => {
       return rules[key].message;

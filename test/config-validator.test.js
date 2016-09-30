@@ -85,6 +85,22 @@ describe('config-validator', () => {
       expect(configValidator.validate(goodObject, rules)).toEqual([]);
     });
 
+    it('should allow values to be optional', () => {
+      var rules = {
+        A : {
+          type: 'Number',
+          message: 'not a number',
+          optional: true
+        }
+      };
+
+      var goodObject = { };
+      var badObject = { A: 'Nope' };
+
+      expect(configValidator.validate(goodObject, rules)).toEqual([]);
+      expect(configValidator.validate(badObject, rules)).toEqual(['not a number']);
+    });
+
     it('should return an array of validation errors that fail', () => {
       var rules = {
         A : {
