@@ -28,6 +28,11 @@ const createValidConfig = () => {
     ],
     background: {
       enabled: ['http://www.example.com/images/A.png'],
+      default: 'http://www.example.com/images/A.png'
+    },
+    stickerControls: {
+      cornerColor: 'rgba(0, 0, 0, 0.5)',
+      cornerSize: 20
     },
     colors: ['#0000FF', '#FF0000'],
     useDefaultEventHandlers: true
