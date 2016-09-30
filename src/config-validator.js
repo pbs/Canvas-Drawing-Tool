@@ -54,7 +54,7 @@ const validateSingle = function (value, type) {
  *
  * @param {Object} object The object to validate
  * @param {Object} rules The list of validation rules to use
- * @return {Array}
+ * @return {Array} The list of error messages. If empty, the object is considered valid
  */
 const validate = function (object, rules) {
   return Object.keys(rules)

@@ -326,7 +326,7 @@ class Stickerbook {
    */
   _validateConfig(config) {
     const configRules = {
-      'stickers': {
+      stickers: {
         type: 'Array',
         message: '"stickers" configuration must be an array of strings'
       },
@@ -338,15 +338,15 @@ class Stickerbook {
         type: 'String',
         message: 'Default background must be a string'
       },
-      'brushes': {
+      brushes: {
         type: 'Array',
         message: 'Brushes configuration must be an array of strings'
       },
-      'colors': {
+      colors: {
         type: 'Array',
         message: 'Colors configuration must be an array of colors'
       },
-      'mobileEnabled': {
+      mobileEnabled: {
         type: 'Boolean',
         message: 'Mobile enabled configuration must be a string'
       },
@@ -363,9 +363,7 @@ class Stickerbook {
     var errorMessages = configValidator.validate(config, configRules);
 
     if (errorMessages.length > 0) {
-      var message = 'Invalid Config: ';
-      message += errorMessages.join(', ');
-      throw new Error(message);
+      throw new Error('Invalid Config: ' + errorMessages.join(', '));
     }
     return true;
   }
