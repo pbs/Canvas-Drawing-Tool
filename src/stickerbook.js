@@ -340,7 +340,8 @@ class Stickerbook {
       },
       'background.default': {
         type: 'String',
-        message: 'Default background must be a string'
+        message: 'Default background must be a string',
+        optional: true
       },
       brushes: {
         type: 'Array',
@@ -352,15 +353,18 @@ class Stickerbook {
       },
       mobileEnabled: {
         type: 'Boolean',
-        message: 'Mobile enabled configuration must be a string'
+        message: 'Mobile enabled configuration must be a string',
+        optional: true
       },
       'stickerControls.cornerColor': {
         type: 'String',
-        message: 'The sticker controls color must be a string'
+        message: 'The sticker controls color must be a string',
+        optional: true
       },
       'stickerControls.cornerSize': {
         type: 'Number',
-        message: 'The corner control size must be a number'
+        message: 'The corner control size must be a number',
+        optional: true
       }
     };
 
