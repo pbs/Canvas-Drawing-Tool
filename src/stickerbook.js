@@ -34,18 +34,7 @@ class Stickerbook {
    */
   constructor(config) {
     // assign default to the config, if it's missing
-    var defaults = {
-      colors: ['#000000'],
-      mobileEnabled: true,
-      useDefaultEventHandlers: false
-    };
-    Object.keys(defaults).forEach((key) => {
-      if(key in config) {
-        return;
-      }
-
-      config[key] = defaults[key];
-    });
+    config = this._applyDefaultConfigs(config);
 
     this._validateConfig(config);
 
@@ -84,6 +73,21 @@ class Stickerbook {
     this.isDestroyed = false;
 
     return this;
+  }
+
+  /**
+   * Applies defaults to a specified config
+   * @param {Object} config The passed config object
+   * @return {Object} An updated config object that has stickerbook config defaults set on it
+   */
+  _applyDefaultConfigs(config) {
+    var defaults = {
+      colors: ['#000000'],
+      mobileEnabled: true,
+      useDefaultEventHandlers: false
+    };
+
+    return Object.assign({}, defaults, config);
   }
 
   /**
