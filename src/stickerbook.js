@@ -1,4 +1,5 @@
 const {fabric} = require('fabric');
+const configValidator = require('./config-validator');
 const {CircleBrush, PencilBrush, SprayBrush} = fabric;
 const FillBrush = require('./fill-brush');
 const BackgroundManager = require('./background-manager');
@@ -310,8 +311,47 @@ class Stickerbook {
    * @returns {Boolean} true if confguration is valid
    */
   _validateConfig(config) {
-    if (!config) {
-      throw new Error('config missing');
+    const configRules = {
+      'stickers': {
+        type: 'Array',
+        message: '"stickers" configuration must be an array of strings'
+      },
+      'background.enabled': {
+        type: 'Array',
+        message: 'Enabled backgrounds configuration must be an array of strings'
+      },
+      'background.default': {
+        type: 'String',
+        message: 'Default background must be a string'
+      },
+      'brushes': {
+        type: 'Array',
+        message: 'Brushes configuration must be an array of strings'
+      },
+      'colors': {
+        type: 'Array',
+        message: 'Colors configuration must be an array of colors'
+      },
+      'mobileEnabled': {
+        type: 'Boolean',
+        message: 'Mobile enabled configuration must be a string'
+      },
+      'stickerControls.cornerColor': {
+        type: 'String',
+        message: 'The sticker controls color must be a string'
+      },
+      'stickerControls.cornerSize': {
+        type: 'Number',
+        message: 'The corner control size must be a number'
+      }
+    };
+
+    var errorMessages = configValidator.validate(config, configRules);
+
+    if (errorMessages.length > 0) {
+      var message = 'Invalid Config: ';
+      message += errorMessages.join(', ');
+      throw new Error(message);
     }
     return true;
   }
