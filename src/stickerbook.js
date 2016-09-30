@@ -33,6 +33,20 @@ class Stickerbook {
    * @returns {Object} Stickerbook
    */
   constructor(config) {
+    // assign default to the config, if it's missing
+    var defaults = {
+      colors: ['#000000'],
+      mobileEnabled: true,
+      useDefaultEventHandlers: false
+    };
+    Object.keys(defaults).forEach((key) => {
+      if(key in config) {
+        return;
+      }
+
+      config[key] = defaults[key];
+    });
+
     this._validateConfig(config);
 
     this._config = config;
