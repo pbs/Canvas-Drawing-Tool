@@ -1,5 +1,6 @@
 const {fabric} = require('fabric');
-// const validationRules = require('./validation-rules');
+const Ajv = require('ajv');
+const validationRules = require('./validation-rules');
 const {CircleBrush, PencilBrush, SprayBrush} = fabric;
 const FillBrush = require('./fill-brush');
 const BackgroundManager = require('./background-manager');
@@ -334,7 +335,19 @@ class Stickerbook {
    * @returns {Boolean} true if confguration is valid
    */
   _validateConfig(config) {
-    return config instanceof Object;
+    var validator = new Ajv();
+    var valid = validator.validate(validationRules, config);
+    if(valid) {
+      return true;
+    }
+
+    var formattedErrors = validator.errors.map((error) => {
+      var field = error.dataPath.replace(/^\./, '');
+      return field + ' ' + error.message;
+    });
+
+    console.log(formattedErrors);
+    return false;
   }
 
   /**
