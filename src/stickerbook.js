@@ -346,8 +346,7 @@ class Stickerbook {
       return field + ' ' + error.message;
     });
 
-    console.log(formattedErrors);
-    return false;
+    throw new Error(formattedErrors.join(' '));
   }
 
   /**
