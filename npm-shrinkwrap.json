@@ -1,7 +1,31 @@
 {
   "name": "pbs-kids-canvas-drawing",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "dependencies": {
+    "ajv": {
+      "version": "4.7.7",
+      "from": "ajv@*",
+      "resolved": "./node_shrinkwrap/ajv-4.7.7.tgz",
+      "dependencies": {
+        "co": {
+          "version": "4.6.0",
+          "from": "co@>=4.6.0 <5.0.0",
+          "resolved": "./node_shrinkwrap/co-4.6.0.tgz"
+        },
+        "json-stable-stringify": {
+          "version": "1.0.1",
+          "from": "json-stable-stringify@>=1.0.1 <2.0.0",
+          "resolved": "./node_shrinkwrap/json-stable-stringify-1.0.1.tgz",
+          "dependencies": {
+            "jsonify": {
+              "version": "0.0.0",
+              "from": "jsonify@>=0.0.0 <0.1.0",
+              "resolved": "./node_shrinkwrap/jsonify-0.0.0.tgz"
+            }
+          }
+        }
+      }
+    },
     "babel-eslint": {
       "version": "6.0.4",
       "from": "node_shrinkwrap/babel-eslint-6.0.4.tgz",
