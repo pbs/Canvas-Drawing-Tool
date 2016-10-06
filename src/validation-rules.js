@@ -26,11 +26,11 @@ module.exports = {
         enabled: {
           type: 'array',
           items: {
-            type: 'string',
+            type: 'string'
           }
         },
         default: {
-          type: 'string'
+          type: ['string', 'null']
         }
       }
     },
@@ -69,5 +69,5 @@ module.exports = {
     useDefaultEventHandlers: {
       type: 'boolean'
     }
-  },
+  }
 };
