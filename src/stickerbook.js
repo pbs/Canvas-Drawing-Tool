@@ -1,6 +1,5 @@
 const {fabric} = require('fabric');
-const configValidator = require('./config-validator');
-const validationRules = require('./validation-rules');
+// const validationRules = require('./validation-rules');
 const {CircleBrush, PencilBrush, SprayBrush} = fabric;
 const FillBrush = require('./fill-brush');
 const BackgroundManager = require('./background-manager');
@@ -335,12 +334,7 @@ class Stickerbook {
    * @returns {Boolean} true if confguration is valid
    */
   _validateConfig(config) {
-    var errorMessages = configValidator.validate(config, validationRules);
-
-    if (errorMessages.length > 0) {
-      throw new Error('Invalid Config: ' + errorMessages.join(', '));
-    }
-    return true;
+    return config instanceof Object;
   }
 
   /**

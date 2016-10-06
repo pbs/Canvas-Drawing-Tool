@@ -7,9 +7,6 @@ const sinon = require('sinon');
 const Stickerbook = require('../src/stickerbook');
 const historyFixture = require('./data/historyFixture.json');
 
-// pull in other tests
-require('./config-validator.test.js');
-
 const createValidConfig = () => {
   return {
     container: document.createElement('div'),
@@ -27,7 +24,8 @@ const createValidConfig = () => {
       'spray'
     ],
     background: {
-      enabled: ['http://www.example.com/images/A.png']
+      enabled: ['http://www.example.com/images/A.png'],
+      default: null
     },
     stickerControls: {
       cornerColor: 'rgba(0, 0, 0, 0.5)',
