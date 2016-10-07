@@ -138,6 +138,10 @@ The above example will attempt to print the image. You can download and save to 
 window.location.href = stickerbook.toDataURL().replace("image/png", "image/octet-stream");
 ```
 
+Bear in mind that this the internal `toDataURL()` call we make to the canvas element will fail if any sticker
+placed on the canvas came from a different origin (perhaps a CDN or the like). This can alleviated by setting the
+proper `Access-Control-Allow-Origin` header on the resource to allow it to be used freely by your page.
+
 ## Background Positioning
 The stickerbook provides background positioning methods, so you can adjust how the background looks as your canvas
 scales and grows. There are three options (currently):
