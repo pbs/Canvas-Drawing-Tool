@@ -88,7 +88,6 @@ class Stickerbook {
     }, config.background);
 
     const defaults = {
-      colors: ['#000000'],
       mobileEnabled: true,
       useDefaultEventHandlers: false
     };
