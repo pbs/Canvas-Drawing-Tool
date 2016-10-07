@@ -1,4 +1,6 @@
 const {fabric} = require('fabric');
+const Ajv = require('ajv');
+const validationRules = require('./validation-rules');
 const {CircleBrush, PencilBrush, SprayBrush} = fabric;
 const FillBrush = require('./fill-brush');
 const BackgroundManager = require('./background-manager');
@@ -32,21 +34,24 @@ class Stickerbook {
    * @returns {Object} Stickerbook
    */
   constructor(config) {
-    this._validateConfig(config);
+    // assign default to the config, if it's missing
+    const configWithDefaults = this._applyDefaultConfigs(config);
 
-    this._config = config;
+    this._validateConfig(configWithDefaults);
+
+    this._config = configWithDefaults;
 
     this.state = {
-      brush: config.brushes[0],
-      brushWidth: config.brushWidths[0],
-      color: config.colors[0],
+      brush: configWithDefaults.brushes[0],
+      brushWidth: configWithDefaults.brushWidths[0],
+      color: configWithDefaults.colors[0],
       drawing: true,
       sticker: null,
       historyIndex: null
     };
     this.history = [];
 
-    this.containerElement = config.container;
+    this.containerElement = configWithDefaults.container;
 
     // the background canvas
     this.backgroundManager = new BackgroundManager(this.containerElement);
@@ -69,6 +74,26 @@ class Stickerbook {
     this.isDestroyed = false;
 
     return this;
+  }
+
+  /**
+   * Applies defaults to a specified config
+   * @param {Object} config The passed config object
+   * @return {Object} An updated config object that has stickerbook config defaults set on it
+   */
+  _applyDefaultConfigs(config) {
+    const background = Object.assign({
+      enabled: [],
+      default: null
+    }, config.background);
+
+    const defaults = {
+      colors: ['#000000'],
+      mobileEnabled: true,
+      useDefaultEventHandlers: false
+    };
+
+    return Object.assign({}, defaults, config, { background });
   }
 
   /**
@@ -310,10 +335,18 @@ class Stickerbook {
    * @returns {Boolean} true if confguration is valid
    */
   _validateConfig(config) {
-    if (!config) {
-      throw new Error('config missing');
+    const validator = new Ajv();
+    const valid = validator.validate(validationRules, config);
+    if(valid) {
+      return true;
     }
-    return true;
+
+    const formattedErrors = validator.errors.map((error) => {
+      const field = error.dataPath.replace(/^\./, '');
+      return field + ' ' + error.message;
+    });
+
+    throw new Error(formattedErrors.join(' '));
   }
 
   /**

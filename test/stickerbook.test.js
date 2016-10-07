@@ -25,9 +25,15 @@ const createValidConfig = () => {
     ],
     background: {
       enabled: ['http://www.example.com/images/A.png'],
+      default: null
+    },
+    stickerControls: {
+      cornerColor: 'rgba(0, 0, 0, 0.5)',
+      cornerSize: 20
     },
     colors: ['#0000FF', '#FF0000'],
-    useDefaultEventHandlers: true
+    useDefaultEventHandlers: true,
+    mobileEnabled: true
   };
 };
 
@@ -241,7 +247,6 @@ describe('Stickerbook', () => {
   it('can remove an existing background image', () => {
     // set a background
     const stickerbook = createStickerbook();
-    expect(stickerbook.getBackground()).toNotEqual('http://www.example.com/images/A.png');
     stickerbook.setBackground('http://www.example.com/images/A.png');
 
     stickerbook.setBackground(null);
