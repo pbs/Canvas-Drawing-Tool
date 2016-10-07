@@ -82,12 +82,12 @@ class Stickerbook {
    * @return {Object} An updated config object that has stickerbook config defaults set on it
    */
   _applyDefaultConfigs(config) {
-    var background = Object.assign({
+    const background = Object.assign({
       enabled: [],
       default: null
     }, config.background);
 
-    var defaults = {
+    const defaults = {
       colors: ['#000000'],
       mobileEnabled: true,
       useDefaultEventHandlers: false
@@ -335,14 +335,14 @@ class Stickerbook {
    * @returns {Boolean} true if confguration is valid
    */
   _validateConfig(config) {
-    var validator = new Ajv();
-    var valid = validator.validate(validationRules, config);
+    const validator = new Ajv();
+    const valid = validator.validate(validationRules, config);
     if(valid) {
       return true;
     }
 
-    var formattedErrors = validator.errors.map((error) => {
-      var field = error.dataPath.replace(/^\./, '');
+    const formattedErrors = validator.errors.map((error) => {
+      const field = error.dataPath.replace(/^\./, '');
       return field + ' ' + error.message;
     });
 
