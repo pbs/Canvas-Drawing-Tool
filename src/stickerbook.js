@@ -470,17 +470,6 @@ class Stickerbook {
   }
 
   /**
-   * Get an image of the current state of the canvas
-   *
-   * @returns {string} dataurl image, in PNG format
-   */
-  serializeToImage() {
-    return this._canvas.toDataURL({
-      format: 'png'
-    });
-  }
-
-  /**
    * Set background image of canvas
    * @param {string|null} imageUrl - url to image for background, or null to remove
    * the background
