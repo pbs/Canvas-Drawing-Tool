@@ -42,9 +42,9 @@ class Stickerbook {
     this._config = configWithDefaults;
 
     this.state = {
-      brush: configWithDefaults.brushes[0],
-      brushWidth: configWithDefaults.brushWidths[0],
-      color: configWithDefaults.colors[0],
+      brush: configWithDefaults.brush.enabled[0],
+      brushWidth: configWithDefaults.brush.widths[0],
+      color: configWithDefaults.brush.colors[0],
       drawing: true,
       sticker: null,
       historyIndex: null
@@ -88,7 +88,6 @@ class Stickerbook {
     }, config.background);
 
     const defaults = {
-      colors: ['#000000'],
       mobileEnabled: true,
       useDefaultEventHandlers: false
     };
@@ -358,7 +357,7 @@ class Stickerbook {
    * @returns {Object} Stickerbook
    */
   setBrush(brushName, brushConfig) {
-    if (this._config.brushes.indexOf(brushName) === -1) {
+    if (this._config.brush.enabled.indexOf(brushName) === -1) {
       throw new Error(brushName + ' is not a permitted brush');
     }
 
@@ -388,7 +387,7 @@ class Stickerbook {
    * @returns {Object} Stickerbook
    */
   setBrushWidth(pixels) {
-    if (this._config.brushWidths.indexOf(pixels) === -1) {
+    if (this._config.brush.widths.indexOf(pixels) === -1) {
       throw new Error(pixels + ' is not a permitted brush width');
     }
 
@@ -405,7 +404,7 @@ class Stickerbook {
    * @returns {Object} Stickerbook
    */
   setColor(color) {
-    if (this._config.colors.indexOf(color) === -1) {
+    if (this._config.brush.colors.indexOf(color) === -1) {
       throw new Error(color + ' is not a permitted color');
     }
 
@@ -457,7 +456,7 @@ class Stickerbook {
    * @returns {Object[]} array of hex code strings
    */
   getAvailableColors() {
-    return this._config.colors;
+    return this._config.brush.colors;
   }
 
   /**
