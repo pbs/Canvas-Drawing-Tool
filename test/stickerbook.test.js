@@ -214,7 +214,7 @@ describe('Stickerbook', () => {
 
   it('serializes canvas state to an image', () => {
     const stickerbook = createStickerbook();
-    const image = stickerbook.serializeToImage();
+    const image = stickerbook.toDataURL();
     expect(image).toExist();
   });
 
