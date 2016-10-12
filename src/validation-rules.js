@@ -7,9 +7,7 @@ module.exports = {
   required: [
     'stickers',
     'background',
-    'brushWidths',
-    'brushes',
-    'colors'
+    'brush'
   ],
   properties: {
     stickers: {
@@ -36,16 +34,27 @@ module.exports = {
     },
 
     brushes: {
-      type: 'array',
-      items: {
-        type: 'string'
-      }
-    },
-
-    colors: {
-      type: 'array',
-      items: {
-        type: 'string'
+      type: 'object',
+      required: ['widths', 'enabled', 'colors'],
+      properties: {
+        widths: {
+          type: 'array',
+          items: {
+            type: 'integer'
+          }
+        },
+        enabled: {
+          type: 'array',
+          items: {
+            type: 'string'
+          }
+        },
+        colors: {
+          type: 'array',
+          items: {
+            type: 'string'
+          }
+        }
       }
     },
 
