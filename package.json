@@ -6,7 +6,7 @@
   "repository": "https://github.com/pbs/Canvas-Drawing-Tool",
   "scripts": {
     "lint": "eslint ./src && eslint ./demo/demo.js",
-    "testsuite": "gulp build-test && mocha-phantomjs test/index.html",
+    "testsuite": "gulp build-test && phantomjs phantom-script.js",
     "test": "npm run lint && npm run testsuite",
     "build": "gulp build",
     "watch": "gulp",
@@ -35,7 +35,7 @@
     "gulp-streamify": "1.0.2",
     "gulp-uglify": "^1.5.4",
     "mocha": "2.5.3",
-    "mocha-phantomjs": "^4.1.0",
+    "phantomjs-prebuild" : "2.*",
     "shrinkpack": "0.12.5",
     "sinon": "1.17.4",
     "vinyl-source-stream": "1.1.0",
