@@ -243,4 +243,5 @@ If you'd like to do some development as well, run `gulp` rather than `gulp build
 in your browser of choice. As you edit files in `src/`, the stickerbook will be rebuilt, but you'll need to refresh
 the page yourself (sorry, no live-reload at the time of writing).
 
-You can also run your own tests with `npm run test`
+You can also run your own tests with `npm run test`. You can also see the test suite run by opening `test/index.html`
+in a browser after running `gulp build-test`.
