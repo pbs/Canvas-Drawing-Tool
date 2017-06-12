@@ -39,7 +39,7 @@ gulp.task('watch', () => {
   gulp.watch('src/*.js', ['build']);
 });
 
-gulp.task('serve', () => {
+gulp.task('serve', ['build-debug'], () => {
   // run dev server
   const staticServer = express();
   staticServer.use(express.static('demo'));
