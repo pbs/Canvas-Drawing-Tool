@@ -587,7 +587,7 @@ class Stickerbook {
    * @param {Number} options.y The y position at which to place the sticker
    * @param {Number} options.xScale The x scale at which to place the sticker, defaults to 1
    * @param {Number} options.yScale The y scale at which to place the sticker, defaults to 1
-   * @param {Number} options.rotation How much to rotate the image, defaults to 0
+   * @param {Number} options.rotation How much to rotate the image in degrees, defaults to 0
    * @returns {Promise} A promise that resolves to the stickerbook once the image is placed
    */
   placeSticker(options) {
@@ -603,7 +603,10 @@ class Stickerbook {
     this._canvas.add(this.state.sticker);
     this.state.sticker.set({
       left: options.x,
-      top: options.y
+      top: options.y,
+      scaleX: options.xScale,
+      scaleY: options.yScale,
+      angle: options.rotation
     });
     this.state.sticker.setCoords();
 
