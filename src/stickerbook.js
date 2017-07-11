@@ -411,26 +411,29 @@ class Stickerbook {
   }
 
   /**
-   * Set sticker for placing.
+   * Set sticker for placing. Note that this method is asynchronous because fabric will have to do
+   * a network call to load the image.
    * @param {string} stickerUrl - URL of image for sticker use
    *
-   * @returns {Object} Stickerbook
+   * @returns {Promise<Stickerbook>} A promise that resolves to the stickerbook when the image has
+   *                                 loaded and is ready
    */
   setSticker(stickerUrl) {
     if (this._config.stickers.indexOf(stickerUrl) === -1) {
       throw new Error(stickerUrl + ' is not a permitted sticker');
     }
 
-    // async, unfortunately - maybe a problem
-    fabric.Image.fromURL(stickerUrl, (img) => {
-      this._setState({
-        sticker: img,
-        drawing: false,
-        _stickerAdded: false
+    return new Promise((resolve) => {
+      fabric.Image.fromURL(stickerUrl, (img) => {
+        this._setState({
+          sticker: img,
+          drawing: false,
+          _stickerAdded: false
+        });
+
+        resolve(this);
       });
     });
-
-    return this;
   }
 
   setPan() {
