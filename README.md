@@ -227,6 +227,10 @@ Example methods:
 `sticker.setAngle()` (http://fabricjs.com/docs/fabric.Object.html#setAngle)
 `sticker.scale()` (http://fabricjs.com/docs/fabric.Object.html#scale)
 
+If you have called `stickerbook.setSticker` with some url, you can place the image programmatically as well. By calling
+`stickerbook.placeSticker({ x: 0, y: 0 })` you can place an image manually onto the canvas. You can also provide an
+optional `xScale`, `yScale` and `rotation` to place the image in a particular starting layout.
+
 ## Finishing Up
 If you're done with the stickerbook, you can simply call `stickerbook.destroy()` to remove any DOM
 nodes, listeners, memory added by the stickerbook. However, it will *not* remove the container you
