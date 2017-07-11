@@ -24,7 +24,7 @@ div#controls {
 
 div#stickerbook_container {
   display: inline-block;
-  border: 1px solid black;
+  border: 10px solid black;
   width: 85vw;
   height: 40vw;
   -webkit-tap-highlight-color: rgba(0,0,0,0);

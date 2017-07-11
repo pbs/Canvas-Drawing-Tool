@@ -13,6 +13,7 @@ const {
   mouseDownHandler,
   pathCreatedHandler
 } = require('./event-handlers');
+const { calculateInnerDimensions } = require('./util');
 
 const BRUSHES = {
   circle: CircleBrush,
@@ -105,10 +106,11 @@ class Stickerbook {
     const canvasElement = fabric.document.createElement('canvas');
     containerElement.appendChild(canvasElement);
 
+    const dimensions = calculateInnerDimensions(containerElement);
     const canvas = new fabric.Canvas(
       canvasElement, {
-        width: containerElement.offsetWidth,
-        height: containerElement.offsetHeight,
+        width: dimensions.width,
+        height: dimensions.height,
         enableRetinaScaling: false,
         selection: false  // no group selection
       }
@@ -300,18 +302,12 @@ class Stickerbook {
       height: this._canvas.height
     };
 
-    const newDimensions = {
-      width: this.containerElement.offsetWidth,
-      height: this.containerElement.offsetHeight
-    };
+    const newDimensions = calculateInnerDimensions(this.containerElement);
 
     this._repositionObjects(originalDimensions, newDimensions);
 
     this.backgroundManager.resize();
-    this._canvas.setDimensions({
-      width: this.containerElement.offsetWidth,
-      height: this.containerElement.offsetHeight
-    });
+    this._canvas.setDimensions(newDimensions);
 
     return this;
   }
