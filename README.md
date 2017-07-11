@@ -112,6 +112,9 @@ try {
     alert('ORLY?');
 }
 ```
+Note that `stickerbook.setSticker` is _ansynchronous_ due to the fact the browser will have to load the image before it
+can add it to the canvas. Therefore, `stickerbook.setSticker` returns a promise that resolves to the stickerbook once
+the image has loaded.
 
 Along with setting the background, you can remove it too:
 ```javascript
