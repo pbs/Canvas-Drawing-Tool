@@ -14,9 +14,7 @@ const mouseDownHandler = function (evt) {
   }
 
   if(this.state._stickerAdded) {
-    // once the sticker has been added, we'll create a new, identical sticker/stamp so the user
-    // can continue placing stickers
-    return this.setSticker(this.state.sticker._element.src);
+    return this;
   }
 
   // add the sticker
