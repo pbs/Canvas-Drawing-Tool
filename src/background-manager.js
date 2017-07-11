@@ -1,3 +1,5 @@
+const { calculateInnerDimensions } = require('./util');
+
 /**
  * Class for managing background image rendering
  */
@@ -33,8 +35,9 @@ class BackgroundManager {
    * @return {undefined}
    */
   resize() {
-    this._canvas.width = this._container.offsetWidth;
-    this._canvas.height = this._container.offsetHeight;
+    var dimensions = calculateInnerDimensions(this._container);
+    this._canvas.width = dimensions.width;
+    this._canvas.height = dimensions.height;
     this.render();
   }
 
