@@ -82,6 +82,18 @@ describe('Stickerbook', () => {
     ]);
   });
 
+  it('sets a sticker', done => {
+    const stickerbook = createStickerbook();
+    stickerbook.setSticker('http://www.example.com/images/A.png')
+      .then(function() {
+        if(stickerbook.state.sticker !== null) {
+          return done();
+        }
+
+        done('Sticker not set properly');
+      })
+  });
+
   it('sets brushes', () => {
     const stickerbook = createStickerbook();
     stickerbook.setBrush('pencil');
