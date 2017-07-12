@@ -581,6 +581,59 @@ class Stickerbook {
   }
 
   /**
+   * Places the current selected sticker programmatically on the canvas
+   * @param {Object} options An object with options for the placement
+   * @param {Number} options.x The x position at which to place the sticker
+   * @param {Number} options.y The y position at which to place the sticker
+   * @param {Number} options.xScale The x scale at which to place the sticker, defaults to 1
+   * @param {Number} options.yScale The y scale at which to place the sticker, defaults to 1
+   * @param {Number} options.rotation How much to rotate the image clockwise in degrees, defaults to
+   *                                  0
+   * @returns {Promise} A promise that resolves to the stickerbook once the image is placed
+   */
+  placeSticker(options) {
+    options.xScale = options.xScale || 1;
+    options.yScale = options.yScale || 1;
+    options.rotation = options.rotation || 0;
+
+    if(options.x === undefined || options.y === undefined) {
+      throw new Error('To place a sticker an x and y must be provided');
+    }
+
+    // add the sticker to the internal fabric canvas and reposition
+    this._canvas.add(this.state.sticker);
+    this.state.sticker.set({
+      left: options.x,
+      top: options.y,
+      scaleX: options.xScale,
+      scaleY: options.yScale,
+      angle: options.rotation
+    });
+    this.state.sticker.setCoords();
+
+    // if there are any sticker control configs, apply those styles
+    if (this._config.stickerControls) {
+      this.state.sticker.set({
+        transparentCorners: false,
+        cornerSize: this._config.stickerControls.cornerSize,
+        cornerColor: this._config.stickerControls.cornerColor
+      });
+    }
+
+    // make this the only active sticker
+    this._canvas.setActiveObject(this.state.sticker);
+
+    // update state
+    this._setState({ _stickerAdded: true });
+
+    // save this action so we can undo/redo
+    this._snapshotToHistory();
+
+    // re-render
+    return this.triggerRender();
+  }
+
+  /**
    * Trigger a canvas render cycle
    * This is useful for low-level manipulation of objects
    *

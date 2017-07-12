@@ -290,6 +290,37 @@ describe('Stickerbook', () => {
     stickerbook.off('mouse:down', callback);
   });
 
+  it('cannot place a sticker without a position', (done) => {
+    const stickerbook = createStickerbook();
+
+    stickerbook.setSticker('http://www.example.com/images/A.png')
+      .then(() => {
+        var errorMessage = null;
+        try {
+          stickerbook.placeSticker({});
+        } catch(e) {
+          errorMessage = e.message;
+        }
+
+        if(errorMessage == 'To place a sticker an x and y must be provided') {
+          return done();
+        }
+
+        done(new Error(`Expected correct error message, got "${errorMessage}" instead`));
+      })
+  })
+  
+  it('can place a sticker with a position', (done) => {
+    const stickerbook = createStickerbook();
+
+    stickerbook.setSticker('http://www.example.com/images/A.png')
+      .then(() => {
+        stickerbook.placeSticker({ x: 0, y: 0 });
+        done();
+      })
+      .catch(done);
+  })
+
   it('destroys properly', () => {
     const stickerbook = createStickerbook();
     
