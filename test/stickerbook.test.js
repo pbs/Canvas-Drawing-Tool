@@ -295,13 +295,18 @@ describe('Stickerbook', () => {
 
     stickerbook.setSticker('http://www.example.com/images/A.png')
       .then(() => {
+        var errorMessage = null;
         try {
-          stickerbook.placeImage({});
+          stickerbook.placeSticker({});
         } catch(e) {
-          return done(); // we want it to err!
+          errorMessage = e.message;
         }
 
-        done('Should have not allowed an empty position');
+        if(errorMessage == 'To place a sticker an x and y must be provided') {
+          return done();
+        }
+
+        done(new Error(`Expected correct error message, got "${errorMessage}" instead`));
       })
   })
   
