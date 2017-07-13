@@ -1,20 +1,20 @@
 {
   "name": "pbs-kids-canvas-drawing",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "PBS Kids canvas manipulation library",
   "main": "index.js",
   "repository": "https://github.com/pbs/Canvas-Drawing-Tool",
   "scripts": {
     "lint": "eslint ./src && eslint ./demo/demo.js",
-    "testsuite": "gulp build-test && mocha-phantomjs test/index.html",
+    "testsuite": "gulp build-test && phantomjs test/run-tests.js",
     "test": "npm run lint && npm run testsuite",
     "build": "gulp build",
-    "watch": "gulp",
-    "shrinkwrap": "npm install && npm shrinkwrap --dev && shrinkpack"
+    "watch": "gulp"
   },
   "author": "PBS Kids (www.pbskids.org)",
   "license": "MIT",
   "dependencies": {
+    "ajv": "^4.7.7",
     "bluebird": "^3.4.1",
     "fabric": "cmac1000/fabric.js#8ce02b600c13",
     "fuzzy-select": "pbs/fuzzy-select.git#1.0.0"
@@ -34,8 +34,7 @@
     "gulp-streamify": "1.0.2",
     "gulp-uglify": "^1.5.4",
     "mocha": "2.5.3",
-    "mocha-phantomjs": "^4.1.0",
-    "shrinkpack": "0.12.5",
+    "phantomjs-prebuilt" : "^2.1.14",
     "sinon": "1.17.4",
     "vinyl-source-stream": "1.1.0",
     "watchify": "2.4.0"

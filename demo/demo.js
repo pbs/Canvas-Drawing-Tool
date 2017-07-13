@@ -19,20 +19,22 @@ var stickerbook = new Stickerbook({
     host + 'images/playCircle.svg',
     host + 'images/star.svg'
   ],
-  enabledBackgrounds: [
-    host + 'images/background.png'
-  ],
-  defaultBackground: null,
-  brushWidths: [1, 10, 50],
-  brushes: [
-    'eraser',
-    'fill',
-    'marker',
-    'pattern',
-    'pencil',
-    'spray'
-  ],
-  colors: ['#0000FF', '#FF0000'],
+  background: {
+    enabled: [ host + 'images/background.png' ],
+    default: host + 'images/background.png'
+  },
+  brush: {
+    widths: [1, 10, 50],
+    enabled: [
+      'eraser',
+      'fill',
+      'marker',
+      'pattern',
+      'pencil',
+      'spray'
+    ],
+    colors: ['#0000FF', '#FF0000']
+  },
   stickerControls: {
     cornerColor: 'rgba(0,0,0,0.5)',
     cornerSize: 20

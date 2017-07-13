@@ -14,38 +14,10 @@ const mouseDownHandler = function (evt) {
   }
 
   if(this.state._stickerAdded) {
-    // once the sticker has been added, we'll create a new, identical sticker/stamp so the user
-    // can continue placing stickers
-    return this.setSticker(this.state.sticker._element.src);
+    return this;
   }
 
-  // add the sticker
-  this._canvas.add(this.state.sticker);
-
-  const pointer = this._canvas.getPointer(evt.e);
-
-  // position the sticker
-  this.state.sticker.set({
-    left: pointer.x,
-    top: pointer.y
-  });
-  this.state.sticker.setCoords();
-
-  if (this._config.stickerControls) {
-    this.state.sticker.set({
-      transparentCorners: false,
-      cornerSize: this._config.stickerControls.cornerSize,
-      cornerColor: this._config.stickerControls.cornerColor
-    });
-  }
-
-  // make this the only active sticker
-  this._canvas.setActiveObject(this.state.sticker);
-
-  this._setState({ _stickerAdded: true });
-
-  this._snapshotToHistory();
-  return this.triggerRender();
+  return this.placeSticker(this._canvas.getPointer(evt.e));
 };
 
 const pathCreatedHandler = function (evt) {

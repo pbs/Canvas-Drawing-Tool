@@ -15,17 +15,21 @@ const createValidConfig = () => {
       'http://www.example.com/images/B.png',
       'http://www.example.com/images/C.png'
     ],
-    brushWidths: [1, 10],
-    brushes: [
-      'eraser',
-      'fill',
-      'marker',
-      'pencil',
-      'spray'
-    ],
-    enabledBackgrounds: ['http://www.example.com/images/A.png'],
-    colors: ['#0000FF', '#FF0000'],
-    useDefaultEventHandlers: true
+    brush: {
+      widths: [1, 10],
+      enabled: ['eraser', 'fill', 'marker', 'pencil', 'spray'],
+      colors: ['#0000FF', '#FF0000'],
+    },
+    background: {
+      enabled: ['http://www.example.com/images/A.png'],
+      default: null
+    },
+    stickerControls: {
+      cornerColor: 'rgba(0, 0, 0, 0.5)',
+      cornerSize: 20
+    },
+    useDefaultEventHandlers: true,
+    mobileEnabled: true
   };
 };
 
@@ -76,6 +80,18 @@ describe('Stickerbook', () => {
       'http://www.example.com/images/B.png',
       'http://www.example.com/images/C.png'
     ]);
+  });
+
+  it('sets a sticker', done => {
+    const stickerbook = createStickerbook();
+    stickerbook.setSticker('http://www.example.com/images/A.png')
+      .then(function() {
+        if(stickerbook.state.sticker !== null) {
+          return done();
+        }
+
+        done('Sticker not set properly');
+      })
   });
 
   it('sets brushes', () => {
@@ -210,7 +226,7 @@ describe('Stickerbook', () => {
 
   it('serializes canvas state to an image', () => {
     const stickerbook = createStickerbook();
-    const image = stickerbook.serializeToImage();
+    const image = stickerbook.toDataURL();
     expect(image).toExist();
   });
 
@@ -231,7 +247,7 @@ describe('Stickerbook', () => {
 
   it('sets a default background image', () => {
     let config = createValidConfig();
-    config.defaultBackground = 'http://www.example.com/images/A.png';
+    config.background.default = 'http://www.example.com/images/A.png';
     const stickerbook = new Stickerbook(config);
     expect(stickerbook.getBackground()).toEqual('http://www.example.com/images/A.png');
   });
@@ -239,7 +255,6 @@ describe('Stickerbook', () => {
   it('can remove an existing background image', () => {
     // set a background
     const stickerbook = createStickerbook();
-    expect(stickerbook.getBackground()).toNotEqual('http://www.example.com/images/A.png');
     stickerbook.setBackground('http://www.example.com/images/A.png');
 
     stickerbook.setBackground(null);
@@ -274,6 +289,37 @@ describe('Stickerbook', () => {
     stickerbook.on('mouse:down', callback);
     stickerbook.off('mouse:down', callback);
   });
+
+  it('cannot place a sticker without a position', (done) => {
+    const stickerbook = createStickerbook();
+
+    stickerbook.setSticker('http://www.example.com/images/A.png')
+      .then(() => {
+        var errorMessage = null;
+        try {
+          stickerbook.placeSticker({});
+        } catch(e) {
+          errorMessage = e.message;
+        }
+
+        if(errorMessage == 'To place a sticker an x and y must be provided') {
+          return done();
+        }
+
+        done(new Error(`Expected correct error message, got "${errorMessage}" instead`));
+      })
+  })
+  
+  it('can place a sticker with a position', (done) => {
+    const stickerbook = createStickerbook();
+
+    stickerbook.setSticker('http://www.example.com/images/A.png')
+      .then(() => {
+        stickerbook.placeSticker({ x: 0, y: 0 });
+        done();
+      })
+      .catch(done);
+  })
 
   it('destroys properly', () => {
     const stickerbook = createStickerbook();

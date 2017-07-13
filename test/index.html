@@ -1,6 +1,7 @@
 <!DOCTYPE>
 <html>
     <head>
+        <title>OMG DOOD</title>
         <meta charset="utf-8">
         <link rel="stylesheet" type="text/css" href="../node_modules/mocha/mocha.css" />
     </head>
@@ -10,9 +11,11 @@
         <script>
             mocha.ui('bdd');
         </script>
-        <script src="stickerbook.test.bundle.js"></script>
+        <script src="./stickerbook.test.bundle.js"></script>
         <script>
-            mocha.run();
+            if(window.callPhantom === undefined) {
+                mocha.run();
+            }
         </script>
     </body>
 </html>

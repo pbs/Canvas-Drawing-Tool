@@ -1,4 +1,6 @@
 const {fabric} = require('fabric');
+const Ajv = require('ajv');
+const validationRules = require('./validation-rules');
 const {CircleBrush, PencilBrush, SprayBrush} = fabric;
 const FillBrush = require('./fill-brush');
 const BackgroundManager = require('./background-manager');
@@ -11,6 +13,7 @@ const {
   mouseDownHandler,
   pathCreatedHandler
 } = require('./event-handlers');
+const { calculateInnerDimensions } = require('./util');
 
 const BRUSHES = {
   circle: CircleBrush,
@@ -32,21 +35,24 @@ class Stickerbook {
    * @returns {Object} Stickerbook
    */
   constructor(config) {
-    this._validateConfig(config);
+    // assign default to the config, if it's missing
+    const configWithDefaults = this._applyDefaultConfigs(config);
 
-    this._config = config;
+    this._validateConfig(configWithDefaults);
+
+    this._config = configWithDefaults;
 
     this.state = {
-      brush: config.brushes[0],
-      brushWidth: config.brushWidths[0],
-      color: config.colors[0],
+      brush: configWithDefaults.brush.enabled[0],
+      brushWidth: configWithDefaults.brush.widths[0],
+      color: configWithDefaults.brush.colors[0],
       drawing: true,
       sticker: null,
       historyIndex: null
     };
     this.history = [];
 
-    this.containerElement = config.container;
+    this.containerElement = configWithDefaults.container;
 
     // the background canvas
     this.backgroundManager = new BackgroundManager(this.containerElement);
@@ -55,8 +61,8 @@ class Stickerbook {
     // (http://stackoverflow.com/questions/10581460)
     this._canvas = this._initializeFabricCanvas(this.containerElement);
 
-    if (this._config.defaultBackground) {
-      this.setBackground(this._config.defaultBackground);
+    if (this._config.background && this._config.background.default) {
+      this.setBackground(this._config.background.default);
     }
 
     this._updateCanvasState();
@@ -72,6 +78,25 @@ class Stickerbook {
   }
 
   /**
+   * Applies defaults to a specified config
+   * @param {Object} config The passed config object
+   * @return {Object} An updated config object that has stickerbook config defaults set on it
+   */
+  _applyDefaultConfigs(config) {
+    const background = Object.assign({
+      enabled: [],
+      default: null
+    }, config.background);
+
+    const defaults = {
+      mobileEnabled: true,
+      useDefaultEventHandlers: false
+    };
+
+    return Object.assign({}, defaults, config, { background });
+  }
+
+  /**
    * Initizalizes a configured Fabric.Canvas object within DOM containing element
    * @param {Object} containerElement - DOM element to build canvas within
    *
@@ -81,10 +106,11 @@ class Stickerbook {
     const canvasElement = fabric.document.createElement('canvas');
     containerElement.appendChild(canvasElement);
 
+    const dimensions = calculateInnerDimensions(containerElement);
     const canvas = new fabric.Canvas(
       canvasElement, {
-        width: containerElement.offsetWidth,
-        height: containerElement.offsetHeight,
+        width: dimensions.width,
+        height: dimensions.height,
         enableRetinaScaling: false,
         selection: false  // no group selection
       }
@@ -276,18 +302,12 @@ class Stickerbook {
       height: this._canvas.height
     };
 
-    const newDimensions = {
-      width: this.containerElement.offsetWidth,
-      height: this.containerElement.offsetHeight
-    };
+    const newDimensions = calculateInnerDimensions(this.containerElement);
 
     this._repositionObjects(originalDimensions, newDimensions);
 
     this.backgroundManager.resize();
-    this._canvas.setDimensions({
-      width: this.containerElement.offsetWidth,
-      height: this.containerElement.offsetHeight
-    });
+    this._canvas.setDimensions(newDimensions);
 
     return this;
   }
@@ -310,10 +330,18 @@ class Stickerbook {
    * @returns {Boolean} true if confguration is valid
    */
   _validateConfig(config) {
-    if (!config) {
-      throw new Error('config missing');
+    const validator = new Ajv();
+    const valid = validator.validate(validationRules, config);
+    if(valid) {
+      return true;
     }
-    return true;
+
+    const formattedErrors = validator.errors.map((error) => {
+      const field = error.dataPath.replace(/^\./, '');
+      return field + ' ' + error.message;
+    });
+
+    throw new Error(formattedErrors.join(' '));
   }
 
   /**
@@ -325,7 +353,7 @@ class Stickerbook {
    * @returns {Object} Stickerbook
    */
   setBrush(brushName, brushConfig) {
-    if (this._config.brushes.indexOf(brushName) === -1) {
+    if (this._config.brush.enabled.indexOf(brushName) === -1) {
       throw new Error(brushName + ' is not a permitted brush');
     }
 
@@ -355,7 +383,7 @@ class Stickerbook {
    * @returns {Object} Stickerbook
    */
   setBrushWidth(pixels) {
-    if (this._config.brushWidths.indexOf(pixels) === -1) {
+    if (this._config.brush.widths.indexOf(pixels) === -1) {
       throw new Error(pixels + ' is not a permitted brush width');
     }
 
@@ -372,7 +400,7 @@ class Stickerbook {
    * @returns {Object} Stickerbook
    */
   setColor(color) {
-    if (this._config.colors.indexOf(color) === -1) {
+    if (this._config.brush.colors.indexOf(color) === -1) {
       throw new Error(color + ' is not a permitted color');
     }
 
@@ -383,26 +411,29 @@ class Stickerbook {
   }
 
   /**
-   * Set sticker for placing.
+   * Set sticker for placing. Note that this method is asynchronous because fabric will have to do
+   * a network call to load the image.
    * @param {string} stickerUrl - URL of image for sticker use
    *
-   * @returns {Object} Stickerbook
+   * @returns {Promise<Stickerbook>} A promise that resolves to the stickerbook when the image has
+   *                                 loaded and is ready
    */
   setSticker(stickerUrl) {
     if (this._config.stickers.indexOf(stickerUrl) === -1) {
       throw new Error(stickerUrl + ' is not a permitted sticker');
     }
 
-    // async, unfortunately - maybe a problem
-    fabric.Image.fromURL(stickerUrl, (img) => {
-      this._setState({
-        sticker: img,
-        drawing: false,
-        _stickerAdded: false
+    return new Promise((resolve) => {
+      fabric.Image.fromURL(stickerUrl, (img) => {
+        this._setState({
+          sticker: img,
+          drawing: false,
+          _stickerAdded: false
+        });
+
+        resolve(this);
       });
     });
-
-    return this;
   }
 
   setPan() {
@@ -424,7 +455,7 @@ class Stickerbook {
    * @returns {Object[]} array of hex code strings
    */
   getAvailableColors() {
-    return this._config.colors;
+    return this._config.brush.colors;
   }
 
   /**
@@ -434,17 +465,6 @@ class Stickerbook {
    */
   getAvailableStickers() {
     return this._config.stickers;
-  }
-
-  /**
-   * Get an image of the current state of the canvas
-   *
-   * @returns {string} dataurl image, in PNG format
-   */
-  serializeToImage() {
-    return this._canvas.toDataURL({
-      format: 'png'
-    });
   }
 
   /**
@@ -460,7 +480,11 @@ class Stickerbook {
       return this;
     }
 
-    var backgroundImageIsEnabled = this._config.enabledBackgrounds.indexOf(imageUrl) > -1;
+    if(!this._config.background || !(this._config.background.enabled instanceof Array)) {
+      return this;
+    }
+
+    var backgroundImageIsEnabled = this._config.background.enabled.indexOf(imageUrl) > -1;
 
     if(!backgroundImageIsEnabled) {
       throw new Error(`${imageUrl} is not a permitted background`);
@@ -554,6 +578,59 @@ class Stickerbook {
       }
     }
     return null;
+  }
+
+  /**
+   * Places the current selected sticker programmatically on the canvas
+   * @param {Object} options An object with options for the placement
+   * @param {Number} options.x The x position at which to place the sticker
+   * @param {Number} options.y The y position at which to place the sticker
+   * @param {Number} options.xScale The x scale at which to place the sticker, defaults to 1
+   * @param {Number} options.yScale The y scale at which to place the sticker, defaults to 1
+   * @param {Number} options.rotation How much to rotate the image clockwise in degrees, defaults to
+   *                                  0
+   * @returns {Promise} A promise that resolves to the stickerbook once the image is placed
+   */
+  placeSticker(options) {
+    options.xScale = options.xScale || 1;
+    options.yScale = options.yScale || 1;
+    options.rotation = options.rotation || 0;
+
+    if(options.x === undefined || options.y === undefined) {
+      throw new Error('To place a sticker an x and y must be provided');
+    }
+
+    // add the sticker to the internal fabric canvas and reposition
+    this._canvas.add(this.state.sticker);
+    this.state.sticker.set({
+      left: options.x,
+      top: options.y,
+      scaleX: options.xScale,
+      scaleY: options.yScale,
+      angle: options.rotation
+    });
+    this.state.sticker.setCoords();
+
+    // if there are any sticker control configs, apply those styles
+    if (this._config.stickerControls) {
+      this.state.sticker.set({
+        transparentCorners: false,
+        cornerSize: this._config.stickerControls.cornerSize,
+        cornerColor: this._config.stickerControls.cornerColor
+      });
+    }
+
+    // make this the only active sticker
+    this._canvas.setActiveObject(this.state.sticker);
+
+    // update state
+    this._setState({ _stickerAdded: true });
+
+    // save this action so we can undo/redo
+    this._snapshotToHistory();
+
+    // re-render
+    return this.triggerRender();
   }
 
   /**

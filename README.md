@@ -27,36 +27,37 @@ var stickerBook = new Stickerbook({
     'path/to/other/image.png'
   ],
 
-  // the backgrounds that can be set
-  enabledBackgrounds: [
-    'first/bg.png',
-    'other/bg.png'
-  ],
+  background: {
+    // the backgrounds that can be set
+    enabled: [
+        'first/bg.png',
+        'other/bg.png'
+    ],
+    
+    // the default background to use (can be null for empty background)
+    default: 'first/bg.png'
+  },
 
-  // the default background to use (can be null for empty background)
-  defaultBackground: 'first/bg.png',
+  brush: {
+    // The available brushes. The list below has the all the currently available ones (at the time of writing)
+    enabled: [
+      'eraser',
+      'fill',
+      'marker',
+      'pattern',
+      'pencil',
+      'spray'
+    ], 
+    
+    // The available brush widths (in pixels)
+    widths: [1, 10],
 
-  // The available brush widths (in pixels)
-  brushWidths: [
-    1,
-    10
-  ],
-
-  // The available brushes. The list below has the all the currently available ones (at the time of writing)
-  brushes: [
-   'eraser',
-   'fill',
-   'marker',
-   'pattern',
-   'pencil',
-   'spray'
-  ],
-
-  // The available colors to use, can be any valid CSS color
-  colors: [
-    '#0000FF',
-    '#FF0000'
-  ],
+    // The available colors to use, can be any valid CSS color
+    colors: [
+      '#0000FF',
+      '#FF0000'
+    ]
+  },
 
   // Whether or not to enable touch events
   mobileEnabled: true,
@@ -111,6 +112,9 @@ try {
     alert('ORLY?');
 }
 ```
+Note that `stickerbook.setSticker` is _ansynchronous_ due to the fact the browser will have to load the image before it
+can add it to the canvas. Therefore, `stickerbook.setSticker` returns a promise that resolves to the stickerbook once
+the image has loaded.
 
 Along with setting the background, you can remove it too:
 ```javascript
@@ -135,6 +139,10 @@ The above example will attempt to print the image. You can download and save to 
 ```javascript
 window.location.href = stickerbook.toDataURL().replace("image/png", "image/octet-stream");
 ```
+
+Bear in mind that this the internal `toDataURL()` call we make to the canvas element will fail if any sticker
+placed on the canvas came from a different origin (perhaps a CDN or the like). This can alleviated by setting the
+proper `Access-Control-Allow-Origin` header on the resource to allow it to be used freely by your page.
 
 ## Background Positioning
 The stickerbook provides background positioning methods, so you can adjust how the background looks as your canvas
@@ -219,6 +227,10 @@ Example methods:
 `sticker.setAngle()` (http://fabricjs.com/docs/fabric.Object.html#setAngle)
 `sticker.scale()` (http://fabricjs.com/docs/fabric.Object.html#scale)
 
+If you have called `stickerbook.setSticker` with some url, you can place the image programmatically as well. By calling
+`stickerbook.placeSticker({ x: 0, y: 0 })` you can place an image manually onto the canvas. You can also provide an
+optional `xScale`, `yScale` and `rotation` to place the image in a particular starting layout.
+
 ## Finishing Up
 If you're done with the stickerbook, you can simply call `stickerbook.destroy()` to remove any DOM
 nodes, listeners, memory added by the stickerbook. However, it will *not* remove the container you
@@ -238,4 +250,5 @@ If you'd like to do some development as well, run `gulp` rather than `gulp build
 in your browser of choice. As you edit files in `src/`, the stickerbook will be rebuilt, but you'll need to refresh
 the page yourself (sorry, no live-reload at the time of writing).
 
-You can also run your own tests with `npm run test`
+You can also run your own tests with `npm run test`. You can also see the test suite run by opening `test/index.html`
+in a browser after running `gulp build-test`.
