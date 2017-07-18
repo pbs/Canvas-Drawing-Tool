@@ -616,7 +616,8 @@ class Stickerbook {
       this.state.sticker.set({
         transparentCorners: false,
         cornerSize: this._config.stickerControls.cornerSize,
-        cornerColor: this._config.stickerControls.cornerColor
+        cornerColor: this._config.stickerControls.cornerColor,
+        hasBorders: false
       });
     }
 
