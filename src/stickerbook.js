@@ -617,7 +617,7 @@ class Stickerbook {
         transparentCorners: false,
         cornerSize: this._config.stickerControls.cornerSize,
         cornerColor: this._config.stickerControls.cornerColor,
-        hasBorders: false
+        hasBorders: true
       });
     }
 
