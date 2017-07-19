@@ -610,6 +610,11 @@ class Stickerbook {
       angle: options.rotation
     });
     this.state.sticker.setCoords();
+      
+    var hasBorders = this._config.stickerControls.hasBorders;
+    if(hasBorders === undefined) {
+        hasBorders = true;
+    }
 
     // if there are any sticker control configs, apply those styles
     if (this._config.stickerControls) {
@@ -617,7 +622,7 @@ class Stickerbook {
         transparentCorners: false,
         cornerSize: this._config.stickerControls.cornerSize,
         cornerColor: this._config.stickerControls.cornerColor,
-        hasBorders: true
+        hasBorders: hasBorders
       });
     }
 
