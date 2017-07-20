@@ -613,10 +613,15 @@ class Stickerbook {
 
     // if there are any sticker control configs, apply those styles
     if (this._config.stickerControls) {
+      var hasBorders = this._config.stickerControls.hasBorders;
+      if(hasBorders === undefined) {
+        hasBorders = true;
+      }
       this.state.sticker.set({
         transparentCorners: false,
         cornerSize: this._config.stickerControls.cornerSize,
-        cornerColor: this._config.stickerControls.cornerColor
+        cornerColor: this._config.stickerControls.cornerColor,
+        hasBorders: hasBorders
       });
     }
 
