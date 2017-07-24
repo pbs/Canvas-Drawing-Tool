@@ -62,10 +62,11 @@ var stickerBook = new Stickerbook({
   // Whether or not to enable touch events
   mobileEnabled: true,
 
-  // styling options for sticker corner controls (optional)
+  // styling options for sticker sizing controls (optional)
   stickerControls: {
     cornerColor: 'rgba(0,0,0,0.5)',
-    cornerSize: 20
+    cornerSize: 20,
+    hasBorders: true
   },
 
   // Whether or not to use default event handlers (see "Events" below)
