@@ -39,7 +39,7 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
       ctx.moveTo(x, yRange.min);
       ctx.lineTo(x, yRange.max);
     });
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 2;
     ctx.stroke();
   },
 
