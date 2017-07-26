@@ -607,7 +607,8 @@ class Stickerbook {
       top: options.y,
       scaleX: options.xScale,
       scaleY: options.yScale,
-      angle: options.rotation
+      angle: options.rotation,
+      perPixelTargetFind: true
     });
     this.state.sticker.setCoords();
 
