@@ -21,4 +21,4 @@ git checkout $commit
 # Run the build
 echo "Running build"
 npm install
-node build.js modules=ALL minifier=node_modules/.bin/uglifyjs
+PATH="$PATH:../node_modules/.bin" node build.js modules=ALL minifier=uglifyjs
