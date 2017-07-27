@@ -16,6 +16,7 @@ const path = {
 // Bundle tasks
 gulp.task('bundle-debug', () => bundle(path.ENTRY_POINT, 'stickerbook.combined.js', [path.TMP], true));
 gulp.task('bundle-release', () => bundle(path.ENTRY_POINT, 'stickerbook.dist.js', [path.TMP], true));
+gulp.task('bundle-test', () => bundle('test/stickerbook.test.js', 'stickerbook.test.bundle.js', [path.TMP], true));
 
 // concat tasks
 gulp.task('concat-release', ['bundle-release'], () => {
@@ -29,6 +30,12 @@ gulp.task('concat-debug', ['bundle-debug'], () => {
     .pipe(concat('stickerbook.combined.js'))
     .pipe(gulp.dest(path.DEST))
     .pipe(gulp.dest(path.DEMO_DEST));
+});
+
+gulp.task('concat-test', ['bundle-test'], () => {
+  return gulp.src(['fabric/dist/fabric.js', 'tmp/stickerbook.test.bundle.js'])
+    .pipe(concat('stickerbook.test.bundle.js'))
+    .pipe(gulp.dest('test'));
 });
 
 gulp.task('build', ['concat-release', 'concat-debug']);
