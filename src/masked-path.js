@@ -1,4 +1,3 @@
-var {fabric} = require('fabric');
 var MaskedShapeRenderer = require('./masked-shape-renderer');
 
 /**

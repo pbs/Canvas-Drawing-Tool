@@ -1,4 +1,3 @@
-const {fabric} = require('fabric');
 const Ajv = require('ajv');
 const validationRules = require('./validation-rules');
 const {CircleBrush, PencilBrush, SprayBrush} = fabric;

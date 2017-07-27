@@ -1,4 +1,3 @@
-const {fabric} = require('fabric');
 const {
   isAlreadyRecordedPath
 } = require('./util');

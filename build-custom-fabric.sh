@@ -22,7 +22,3 @@ git checkout $commit
 echo "Running build"
 npm install
 node build.js modules=ALL minifier=node_modules/.bin/uglifyjs
-
-# now copy into the src folder to make it easy to include
-cd ../
-cp fabric/dist/fabric.js src/fabric.js

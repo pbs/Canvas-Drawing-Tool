@@ -46,5 +46,5 @@ test/stickerbook.test.bundle.js
 # clone directory of the fabric source for builds
 fabric
 
-# copied fabric custom build
-src/fabric.js
+# tmp directory for builds
+tmp
