@@ -1,4 +1,3 @@
-const {fabric} = require('fabric');
 const {ImageDataColorGrid, FuzzySelector} = require('fuzzy-select');
 
 /**

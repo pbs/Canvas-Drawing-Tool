@@ -1,4 +1,3 @@
-const {fabric} = require('fabric');
 const MaskedBrushRenderer = require('./masked-brush-renderer');
 const MaskedPath = require('./masked-path');
 

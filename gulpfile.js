@@ -1,37 +1,44 @@
 'use strict';
 
-const browserify = require('browserify');
+const bundle = require('./gulp/bundle');
+const concat = require('gulp-concat');
 const express = require('express');
 const gulp = require('gulp');
-const source = require('vinyl-source-stream');
-const streamify = require('gulp-streamify');
 const uglify = require('gulp-uglify');
 
 const path = {
   DEMO_DEST: './demo',
   DEST: './dist',
+  TMP: './tmp',
   ENTRY_POINT: './index.js'
 };
 
-const bundle = (entryPoint, outputFilename, outputDestinations, debug) => {
-  // default options for debug mode
-  debug = debug === true ? true : false;
+// Bundle tasks
+gulp.task('bundle-debug', () => bundle(path.ENTRY_POINT, 'stickerbook.combined.js', [path.TMP], true));
+gulp.task('bundle-release', () => bundle(path.ENTRY_POINT, 'stickerbook.dist.js', [path.TMP], true));
+gulp.task('bundle-test', () => bundle('test/stickerbook.test.js', 'stickerbook.test.bundle.js', [path.TMP], true));
 
-  var inProcessBundle = browserify(entryPoint, { debug: debug })
-    .transform('babelify')
-    .bundle()
-    .pipe(source(outputFilename));
+// concat tasks
+gulp.task('concat-release', ['bundle-release'], () => {
+  return gulp.src(['fabric/dist/fabric.min.js', 'tmp/stickerbook.dist.js'])
+    .pipe(concat('stickerbook.dist.js'))
+    .pipe(gulp.dest(path.DEST));
+});
 
-  if(!debug) {
-    inProcessBundle = inProcessBundle.pipe(streamify(uglify()));
-  }
+gulp.task('concat-debug', ['bundle-debug'], () => {
+  return gulp.src(['fabric/dist/fabric.js', 'tmp/stickerbook.combined.js'])
+    .pipe(concat('stickerbook.combined.js'))
+    .pipe(gulp.dest(path.DEST))
+    .pipe(gulp.dest(path.DEMO_DEST));
+});
 
-  outputDestinations.forEach(destination => {
-    inProcessBundle = inProcessBundle.pipe(gulp.dest(destination));
-  });
+gulp.task('concat-test', ['bundle-test'], () => {
+  return gulp.src(['fabric/dist/fabric.js', 'tmp/stickerbook.test.bundle.js'])
+    .pipe(concat('stickerbook.test.bundle.js'))
+    .pipe(gulp.dest('test'));
+});
 
-  return inProcessBundle;
-};
+gulp.task('build', ['concat-release', 'concat-debug']);
 
 gulp.task('watch', () => {
   'use strict';
@@ -39,36 +46,13 @@ gulp.task('watch', () => {
   gulp.watch('src/*.js', ['build']);
 });
 
-gulp.task('serve', ['build-debug'], () => {
+gulp.task('serve', ['concat-debug'], () => {
   // run dev server
   const staticServer = express();
   staticServer.use(express.static('demo'));
   staticServer.listen(8000, function () {
     console.log('Demo app running at http://localhost:8000/');
   });
-});
-
-gulp.task('build', ['build-debug', 'build-release']);
-
-gulp.task('build-debug', () => {
-  'use strict';
-
-  return bundle(path.ENTRY_POINT, 'stickerbook.combined.js', [path.DEST, path.DEMO_DEST], true);
-});
-
-gulp.task('build-release', () => {
-  'use strict';
-
-  return bundle(path.ENTRY_POINT, 'stickerbook.dist.js', [path.DEST], false);
-});
-
-gulp.task('build-test', () => {
-  return bundle(
-    './test/stickerbook.test.js',
-    'stickerbook.test.bundle.js',
-    ['test'],
-    true
-  );
 });
 
 gulp.task('default', ['build', 'watch', 'serve']);

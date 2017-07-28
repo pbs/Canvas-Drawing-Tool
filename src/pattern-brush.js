@@ -1,4 +1,3 @@
-const {fabric} = require('fabric');
 
 /**
  * Utility function to decide if two points are far enough apart to add a new image
