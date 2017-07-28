@@ -519,6 +519,15 @@ class Stickerbook {
   }
 
   /**
+   * Deselects any selected items
+   * @return {Object} stickerbook
+   */
+  deselectAll() {
+    this._canvas.deactivateAll().renderAll();
+    return this;
+  }
+
+  /**
    * Exports the stickerbook to a base64 encoded PNG, mimicking the native canvas methods
    *
    * @returns {string} A base64 string with the composited image in it
