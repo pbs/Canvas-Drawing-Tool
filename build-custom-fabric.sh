@@ -18,6 +18,7 @@ cd fabric
 
 # checkout a specific commit
 echo "Switching to commit=$commit"
+git checkout .
 git checkout $commit
 
 # Run the build
