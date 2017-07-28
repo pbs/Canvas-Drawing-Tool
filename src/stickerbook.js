@@ -533,6 +533,9 @@ class Stickerbook {
    * @returns {string} A base64 string with the composited image in it
    */
   toDataURL() {
+    // deselect anything before exporting so we don't see scaling handles in the exported image
+    this.deselectAll();
+
     var dummyCanvas = document.createElement('canvas');
     dummyCanvas.width = this._canvas.lowerCanvasEl.width;
     dummyCanvas.height = this._canvas.lowerCanvasEl.height;
