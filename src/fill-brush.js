@@ -56,6 +56,7 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
   onMouseUp: function () {
     var dataUrl = this.canvas.contextTop.canvas.toDataURL();
     fabric.Image.fromURL(dataUrl, (image) => {
+      image.set({ selectable: false });
       this.canvas.add(image);
       this.canvas.clearContext(this.canvas.contextTop);
       this.canvas.renderAll();
