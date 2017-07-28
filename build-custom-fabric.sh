@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-repo="https://github.com/cmac1000/fabric.js.git"
-commit="8ce02b600c13"
+repo="https://github.com/kangax/fabric.js.git"
+commit="v1.6.1"
 
 # if fabric hasn't been cloned, clone it
 echo "Checking that fabric has been cloned"
