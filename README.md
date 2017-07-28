@@ -121,6 +121,11 @@ Along with setting the background, you can remove it too:
 stickerbook.clearBackground();
 ```
 
+You can also programmatically unselect any UI items with
+```javascript
+stickerbook.deselectAll();
+```
+
 ### Exporting
 You can also export the stickerbook to a data url for saving, printing, whatever like so:
 ```javascript
