@@ -2,7 +2,7 @@
 set -e
 
 repo="https://github.com/kangax/fabric.js.git"
-commit="v1.6.7"
+tag="v1.6.7"
 
 # if fabric hasn't been cloned, clone it
 echo "Checking that fabric has been cloned"
@@ -19,7 +19,7 @@ cd fabric
 # checkout a specific commit
 echo "Switching to commit=$commit"
 git checkout .
-git checkout $commit
+git checkout tags/$tag
 
 # Run the build
 echo "Running build"
