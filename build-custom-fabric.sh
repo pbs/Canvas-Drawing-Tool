@@ -1,11 +1,14 @@
 #!/bin/bash
 set -e
 
+repo="https://github.com/cmac1000/fabric.js.git"
+commit="8ce02b600c13"
+
 # if fabric hasn't been cloned, clone it
 echo "Checking that fabric has been cloned"
 if [ ! -d "fabric" ]; then
     echo "It hasn't. Cloning now"
-    git clone https://github.com/cmac1000/fabric.js.git fabric
+    git clone $repo fabric
 else
     echo "Already cloned"
 fi
@@ -14,7 +17,6 @@ fi
 cd fabric
 
 # checkout a specific commit
-commit="8ce02b600c13"
 echo "Switching to commit=$commit"
 git checkout $commit
 
