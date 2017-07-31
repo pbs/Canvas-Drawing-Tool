@@ -5,6 +5,9 @@
     "amd": true,
     "es6": true
   },
+  "globals": {
+    "fabric": true
+  },
   "parser": "babel-eslint",
   "plugins": [],
   "ecmaFeatures": {

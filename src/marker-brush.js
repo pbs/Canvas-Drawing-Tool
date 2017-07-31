@@ -1,4 +1,3 @@
-const {fabric} = require('fabric');
 
 // based on
 // https://github.com/tennisonchan/fabric-brush/blob/master/src/brushes/marker_brush.js
