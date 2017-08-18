@@ -54,6 +54,9 @@ module.exports = {
           items: {
             type: 'string'
           }
+        },
+        custom: {
+          type: 'object'
         }
       }
     },

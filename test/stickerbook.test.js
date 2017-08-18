@@ -58,6 +58,26 @@ describe('Stickerbook', () => {
     expect(stickerbook._config).toEqual(validConfig);
   });
 
+  it('allows custom brushes', () => {
+    const validConfig = createValidConfig();
+    validConfig.brush.custom = {
+      circle: fabric.CircleBrush
+    };
+    validConfig.brush.enabled.push('circle');
+    const stickerbook = new Stickerbook(validConfig);
+    stickerbook.setBrush('circle');
+  });
+
+  it('fails on custom brushes that aren\'t subclasses of base brush', () => {
+    const config = createValidConfig();
+    config.brush.custom = {
+      circle: function() { }
+    };
+    expect(
+      () => new Stickerbook(config)
+    ).toThrow('Custom brush "circle" is not an instance of fabric.BaseBrush');
+  });
+
   it('sets colors', () => {
     const stickerbook = createStickerbook();
     stickerbook.setColor('#0000FF');

@@ -1,6 +1,6 @@
 const Ajv = require('ajv');
 const validationRules = require('./validation-rules');
-const {CircleBrush, PencilBrush, SprayBrush} = fabric;
+const {BaseBrush, CircleBrush, PencilBrush, SprayBrush} = fabric;
 const FillBrush = require('./fill-brush');
 const BackgroundManager = require('./background-manager');
 const MarkerBrush = require('./marker-brush');
@@ -38,6 +38,11 @@ class Stickerbook {
     };
 
     this._validateConfig(configWithDefaults);
+
+    // apply any extra available brushes
+    if(configWithDefaults.brush.custom !== undefined) {
+      Object.assign(configWithDefaults, configWithDefaults.brush.custom)
+    }
 
     this._config = configWithDefaults;
 
@@ -340,6 +345,19 @@ class Stickerbook {
 
       throw new Error(formattedErrors.join(' '));
     }
+
+    if(config.brush.custom === undefined) {
+      return true;
+    }
+
+    Object.keys(config.brush.custom).forEach(key => {
+      if(config.brush.custom[key].prototype instanceof BaseBrush) {
+        return;
+      }
+
+      // this entry is not an actual fabric brush
+      throw new Error(`Custom brush "${key}" is not an instance of fabric.BaseBrush`);
+    });
 
     return true;
   }
