@@ -14,16 +14,6 @@ const {
 } = require('./event-handlers');
 const { calculateInnerDimensions } = require('./util');
 
-const BRUSHES = {
-  circle: CircleBrush,
-  eraser: PencilEraserBrush,
-  marker: MarkerBrush,
-  pattern: PatternBrush,
-  pencil: PencilBrush,
-  spray: SprayBrush,
-  fill: FillBrush
-};
-
 class Stickerbook {
   /**
    * Construct new stickerbook
@@ -36,6 +26,16 @@ class Stickerbook {
   constructor(config) {
     // assign default to the config, if it's missing
     const configWithDefaults = this._applyDefaultConfigs(config);
+
+    this.availableBrushes = {
+      circle: CircleBrush,
+      eraser: PencilEraserBrush,
+      marker: MarkerBrush,
+      pattern: PatternBrush,
+      pencil: PencilBrush,
+      spray: SprayBrush,
+      fill: FillBrush
+    };
 
     this._validateConfig(configWithDefaults);
 
@@ -260,7 +260,7 @@ class Stickerbook {
    * @returns {Object} Stickerbook
    */
   _updateCanvasState() {
-    const BrushClass = BRUSHES[this.state.brush];
+    const BrushClass = this.availableBrushes[this.state.brush];
     const newBrushType = (
       this._canvas.freeDrawingBrush.constructor.prototype !== BrushClass.prototype
     );
@@ -356,7 +356,7 @@ class Stickerbook {
       throw new Error(brushName + ' is not a permitted brush');
     }
 
-    if (Object.keys(BRUSHES).indexOf(brushName) === -1) {
+    if (Object.keys(this.availableBrushes).indexOf(brushName) === -1) {
       throw new Error(brushName + ' is an unknown brush type');
     }
 
