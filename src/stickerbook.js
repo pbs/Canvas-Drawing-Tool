@@ -331,16 +331,17 @@ class Stickerbook {
   _validateConfig(config) {
     const validator = new Ajv();
     const valid = validator.validate(validationRules, config);
-    if(valid) {
-      return true;
+
+    if(!valid) {
+      const formattedErrors = validator.errors.map((error) => {
+        const field = error.dataPath.replace(/^\./, '');
+        return field + ' ' + error.message;
+      });
+
+      throw new Error(formattedErrors.join(' '));
     }
 
-    const formattedErrors = validator.errors.map((error) => {
-      const field = error.dataPath.replace(/^\./, '');
-      return field + ' ' + error.message;
-    });
-
-    throw new Error(formattedErrors.join(' '));
+    return true;
   }
 
   /**
