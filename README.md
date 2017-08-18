@@ -46,7 +46,10 @@ var stickerBook = new Stickerbook({
       'marker',
       'pattern',
       'pencil',
-      'spray'
+      'spray',
+
+      // a custom brush configured below
+      'mycustombrush'
     ], 
     
     // The available brush widths (in pixels)
@@ -56,7 +59,13 @@ var stickerBook = new Stickerbook({
     colors: [
       '#0000FF',
       '#FF0000'
-    ]
+    ],
+
+    // any custom brushes, the key of this object are the id to be used in the enabled list above, and the value must
+    // be a subclass of fabric.BaseBrush (via fabric.util.createClass(fabric.BaseBrush, { }) )
+    custom: {
+      mycustombrush: MyCustomBrush
+    }
   },
 
   // Whether or not to enable touch events

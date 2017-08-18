@@ -1,6 +1,6 @@
 const Ajv = require('ajv');
 const validationRules = require('./validation-rules');
-const {CircleBrush, PencilBrush, SprayBrush} = fabric;
+const {BaseBrush, CircleBrush, PencilBrush, SprayBrush} = fabric;
 const FillBrush = require('./fill-brush');
 const BackgroundManager = require('./background-manager');
 const MarkerBrush = require('./marker-brush');
@@ -13,16 +13,6 @@ const {
   pathCreatedHandler
 } = require('./event-handlers');
 const { calculateInnerDimensions } = require('./util');
-
-const BRUSHES = {
-  circle: CircleBrush,
-  eraser: PencilEraserBrush,
-  marker: MarkerBrush,
-  pattern: PatternBrush,
-  pencil: PencilBrush,
-  spray: SprayBrush,
-  fill: FillBrush
-};
 
 class Stickerbook {
   /**
@@ -37,7 +27,22 @@ class Stickerbook {
     // assign default to the config, if it's missing
     const configWithDefaults = this._applyDefaultConfigs(config);
 
+    this.availableBrushes = {
+      circle: CircleBrush,
+      eraser: PencilEraserBrush,
+      marker: MarkerBrush,
+      pattern: PatternBrush,
+      pencil: PencilBrush,
+      spray: SprayBrush,
+      fill: FillBrush
+    };
+
     this._validateConfig(configWithDefaults);
+
+    // apply any extra available brushes
+    if(configWithDefaults.brush.custom !== undefined) {
+      Object.assign(configWithDefaults, configWithDefaults.brush.custom)
+    }
 
     this._config = configWithDefaults;
 
@@ -260,7 +265,7 @@ class Stickerbook {
    * @returns {Object} Stickerbook
    */
   _updateCanvasState() {
-    const BrushClass = BRUSHES[this.state.brush];
+    const BrushClass = this.availableBrushes[this.state.brush];
     const newBrushType = (
       this._canvas.freeDrawingBrush.constructor.prototype !== BrushClass.prototype
     );
@@ -331,16 +336,30 @@ class Stickerbook {
   _validateConfig(config) {
     const validator = new Ajv();
     const valid = validator.validate(validationRules, config);
-    if(valid) {
+
+    if(!valid) {
+      const formattedErrors = validator.errors.map((error) => {
+        const field = error.dataPath.replace(/^\./, '');
+        return field + ' ' + error.message;
+      });
+
+      throw new Error(formattedErrors.join(' '));
+    }
+
+    if(config.brush.custom === undefined) {
       return true;
     }
 
-    const formattedErrors = validator.errors.map((error) => {
-      const field = error.dataPath.replace(/^\./, '');
-      return field + ' ' + error.message;
+    Object.keys(config.brush.custom).forEach(key => {
+      if(config.brush.custom[key].prototype instanceof BaseBrush) {
+        return;
+      }
+
+      // this entry is not an actual fabric brush
+      throw new Error(`Custom brush "${key}" is not an instance of fabric.BaseBrush`);
     });
 
-    throw new Error(formattedErrors.join(' '));
+    return true;
   }
 
   /**
@@ -356,7 +375,7 @@ class Stickerbook {
       throw new Error(brushName + ' is not a permitted brush');
     }
 
-    if (Object.keys(BRUSHES).indexOf(brushName) === -1) {
+    if (Object.keys(this.availableBrushes).indexOf(brushName) === -1) {
       throw new Error(brushName + ' is an unknown brush type');
     }
 
