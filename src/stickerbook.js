@@ -1,5 +1,10 @@
-const Ajv = require('ajv');
-const validationRules = require('./validation-rules');
+const validate = require('./validation/validate');
+
+const schema = {
+  stickerbook: require('./validation/stickerbook.json'),
+  pattern: require('./validation/pattern-brush.json')
+};
+
 const {BaseBrush, CircleBrush, PencilBrush, SprayBrush} = fabric;
 const FillBrush = require('./fill-brush');
 const BackgroundManager = require('./background-manager');
@@ -41,7 +46,7 @@ class Stickerbook {
 
     // apply any extra available brushes
     if(configWithDefaults.brush.custom !== undefined) {
-      Object.assign(configWithDefaults, configWithDefaults.brush.custom)
+      Object.assign(configWithDefaults, configWithDefaults.brush.custom);
     }
 
     this._config = configWithDefaults;
@@ -271,11 +276,8 @@ class Stickerbook {
     );
 
     if (newBrushType) {
-      const brush = new BrushClass(this._canvas);
+      const brush = new BrushClass(this._canvas, this.state.brushConfig);
       this._canvas.freeDrawingBrush = brush;
-      if (this.state.brush === 'pattern') {
-        brush.setImages(this.state.patternImages);
-      }
     }
 
     this._canvas.freeDrawingBrush.color = this.state.color;
@@ -334,17 +336,7 @@ class Stickerbook {
    * @returns {Boolean} true if confguration is valid
    */
   _validateConfig(config) {
-    const validator = new Ajv();
-    const valid = validator.validate(validationRules, config);
-
-    if(!valid) {
-      const formattedErrors = validator.errors.map((error) => {
-        const field = error.dataPath.replace(/^\./, '');
-        return field + ' ' + error.message;
-      });
-
-      throw new Error(formattedErrors.join(' '));
-    }
+    validate(schema.stickerbook, config);
 
     if(config.brush.custom === undefined) {
       return true;
@@ -384,11 +376,13 @@ class Stickerbook {
       drawing: true
     };
 
-    if (brushName === 'pattern') {
-      if (!brushConfig || Object.keys(brushConfig).indexOf('images') === -1) {
-        throw new Error('images configuration required for pattern brush');
+    if (brushConfig) {
+      newState.brushConfig = brushConfig;
+
+      // if there are validation rules for the brush's configuration, run a quick check
+      if (schema[brushName] !== undefined) {
+        validate(schema[brushName], brushConfig);
       }
-      newState.patternImages = brushConfig.images;
     }
 
     return this._setState(newState);

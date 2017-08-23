@@ -1,4 +1,3 @@
-
 /**
  * Utility function to decide if two points are far enough apart to add a new image
  *
@@ -23,15 +22,19 @@ const PatternBrush = fabric.util.createClass(fabric.BaseBrush, {
    * initialize pattern brush
    *
    * @param {Object} canvas - a Fabric.Canvas instance
+   * @param {Object} options The options for the pattern brush
    * @return {undefined}
    */
-  initialize: function (canvas) {
+  initialize: function (canvas, options) {
     this.canvas = canvas;
     this.points = [];
     this.images = [];
     this.placedImages = [];
     this._lastPoint = null;
     this._imgIndex = 0;
+
+    this.setImages(options.images);
+
     // NOTE: in the future, this can be configurable.
     this._distanceTolerance = 100;
   },
