@@ -1,0 +1,15 @@
+{
+  "description" : "Pattern brush configuration schema",
+  "type" : "object",
+  "required" : [
+    "images"
+  ],
+  "properties" : {
+    "images" : {
+      "type" : "array",
+      "items" : {
+        "type" : "string"
+      }
+    }
+  }
+}
