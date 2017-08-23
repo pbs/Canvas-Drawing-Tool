@@ -26,7 +26,7 @@ const BitmapBrush = fabric.util.createClass(fabric.BaseBrush, {
       for(var j = 0; j < image.height; j++) {
         var pixel = 4 * (image.height * i + j);
 
-        rawImageData.data[pixel][0] = currentRgbaColor[0];
+        rawImageData.data[pixel] = currentRgbaColor[0];
         rawImageData.data[pixel + 1] = currentRgbaColor[1];
         rawImageData.data[pixel + 2] = currentRgbaColor[2];
       }

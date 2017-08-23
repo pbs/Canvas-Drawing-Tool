@@ -7,7 +7,6 @@ var forEach = function (array, callback, scope) {
   }
 };
 
-
 var Stickerbook = window.Stickerbook;
 var host = location.toString();
 
@@ -27,6 +26,7 @@ var stickerbook = new Stickerbook({
     widths: [1, 10, 50],
     enabled: [
       'eraser',
+      'bitmap',
       'fill',
       'marker',
       'pattern',
@@ -76,6 +76,9 @@ forEach(document.getElementById('brushes').childNodes, function (child) {
             host + 'images/star.svg'
           ]
         });
+      } else if(child.name === 'bitmap') {
+        stickerbook.setBrushWidth(50);
+        stickerbook.setBrush('bitmap', { image: host + 'images/star.svg' });
       } else {
         stickerbook.setBrush(child.name);
       }

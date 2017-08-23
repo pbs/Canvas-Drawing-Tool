@@ -2,10 +2,12 @@ const validate = require('./validation/validate');
 
 const schema = {
   stickerbook: require('./validation/stickerbook.json'),
-  pattern: require('./validation/pattern-brush.json')
+  pattern: require('./validation/pattern-brush.json'),
+  bitmap: require('./validation/bitmap-brush.json')
 };
 
 const {BaseBrush, CircleBrush, PencilBrush, SprayBrush} = fabric;
+const BitmapBrush = require('./bitmap-brush');
 const FillBrush = require('./fill-brush');
 const BackgroundManager = require('./background-manager');
 const MarkerBrush = require('./marker-brush');
@@ -33,6 +35,7 @@ class Stickerbook {
     const configWithDefaults = this._applyDefaultConfigs(config);
 
     this.availableBrushes = {
+      bitmap: BitmapBrush,
       circle: CircleBrush,
       eraser: PencilEraserBrush,
       marker: MarkerBrush,
@@ -54,6 +57,7 @@ class Stickerbook {
     this.state = {
       brush: configWithDefaults.brush.enabled[0],
       brushWidth: configWithDefaults.brush.widths[0],
+      brushConfig: {},
       color: configWithDefaults.brush.colors[0],
       drawing: true,
       sticker: null,
