@@ -1,15 +1,13 @@
 const BitmapBrush = fabric.util.createClass(fabric.BaseBrush, {
-  initialize: function (canvas, imageUrl) {
+  initialize: function (canvas, options) {
     this.canvas = canvas;
-    this.imageUrl = imageUrl;
-
-    this.loadImage();
+    this.loadImage(options.imageUrl);
   },
 
-  loadImage: function () {
+  loadImage: function (url) {
     var image = new Image();
     image.onload = this.createBitmap.bind(this, image);
-    image.src = this.imageUrl;
+    image.src = url;
   },
 
   createBitmap: function (image) {
