@@ -46,7 +46,7 @@ class Stickerbook {
 
     // apply any extra available brushes
     if(configWithDefaults.brush.custom !== undefined) {
-      Object.assign(configWithDefaults, configWithDefaults.brush.custom)
+      Object.assign(configWithDefaults, configWithDefaults.brush.custom);
     }
 
     this._config = configWithDefaults;
