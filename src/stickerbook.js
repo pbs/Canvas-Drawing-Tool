@@ -1,5 +1,5 @@
 const Ajv = require('ajv');
-const validationRules = require('./validation-rules');
+const validationRules = require('./validation/stickerbook.json');
 const {BaseBrush, CircleBrush, PencilBrush, SprayBrush} = fabric;
 const FillBrush = require('./fill-brush');
 const BackgroundManager = require('./background-manager');

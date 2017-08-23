@@ -1,8 +1,5 @@
-/**
- * The validation rules for the stickerbook config values
- */
-module.exports = {
-  description: 'Stickerbook configuration',
+{
+  description: 'Stickerbook configuration schema',
   type: 'object',
   required: [
     'stickers',
@@ -82,4 +79,4 @@ module.exports = {
       type: 'boolean'
     }
   }
-};
+}
