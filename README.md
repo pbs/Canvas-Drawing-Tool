@@ -42,6 +42,7 @@ var stickerBook = new Stickerbook({
     // The available brushes. The list below has the all the currently available ones (at the time of writing)
     enabled: [
       'eraser',
+      'bitmap',
       'fill',
       'marker',
       'pattern',
@@ -136,8 +137,37 @@ You can also programmatically unselect any UI items with
 stickerbook.deselectAll();
 ```
 
+#### Configurable Brushes
+When setting a brush via `setBrush`, some brushes allow for configuration to be provided for that brush.
+
+##### Bitmap Brush
+The bitmap brush takes an image and turns it into a "stamp" by replacing it's RGB channels with the color you specify.
+It preserves the alpha channel however, so you can use that shape the stamp in any way you want. Here's an example
+usage:
+
+```javascript
+stickerbook.setBrush('bitmap', {
+  image: 'pathToSomeImage' // the image to sample
+});
+```
+
+However, don't forget to enable this brush!
+
+##### Pattern Brush
+The pattern brush takes an array of images and stamps them as the user drags their mouse/finger across the canvas. Here is an example configuration:
+
+```javascript
+stickerbook.setBrush('pattern', {
+  images: [
+    'image1',
+    'image2'
+  ]
+})
+```
+
 ### Exporting
 You can also export the stickerbook to a data url for saving, printing, whatever like so:
+
 ```javascript
 var dataUrl = stickerbook.toDataURL();
 
@@ -162,11 +192,13 @@ proper `Access-Control-Allow-Origin` header on the resource to allow it to be us
 ## Background Positioning
 The stickerbook provides background positioning methods, so you can adjust how the background looks as your canvas
 scales and grows. There are three options (currently):
+
 ```javascript
 stickerbook.backgroundManager.setPositioning('default');
 stickerbook.backgroundManager.setPositioning('fit-height');
 stickerbook.backgroundManager.setPositioning('fit-width');
 ```
+
 `default` is the default behavior, and simply positions the image in the top corner with no scaling at all.
 `fit-height` will scale the image so that it is as tall as the canvas and centered horizontally. `fit-width` is the
 opposite and fills the image horizontally, while centering it vertically. If an unknown option is provided for
