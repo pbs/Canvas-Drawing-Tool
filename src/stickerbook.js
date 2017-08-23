@@ -1,5 +1,10 @@
 const validate = require('./validation/validate');
-const stickerbookConfigSchema = require('./validation/stickerbook.json');
+
+const schema = {
+  stickerbook: require('./validation/stickerbook.json'),
+  pattern: require('./validation/pattern-brush.json')
+};
+
 const {BaseBrush, CircleBrush, PencilBrush, SprayBrush} = fabric;
 const FillBrush = require('./fill-brush');
 const BackgroundManager = require('./background-manager');
@@ -271,11 +276,8 @@ class Stickerbook {
     );
 
     if (newBrushType) {
-      const brush = new BrushClass(this._canvas);
+      const brush = new BrushClass(this._canvas, this.state.brushConfig);
       this._canvas.freeDrawingBrush = brush;
-      if (this.state.brush === 'pattern') {
-        brush.setImages(this.state.patternImages);
-      }
     }
 
     this._canvas.freeDrawingBrush.color = this.state.color;
@@ -334,7 +336,7 @@ class Stickerbook {
    * @returns {Boolean} true if confguration is valid
    */
   _validateConfig(config) {
-    validate(stickerbookConfigSchema, config);
+    validate(schema.stickerbook, config);
 
     if(config.brush.custom === undefined) {
       return true;
@@ -374,11 +376,13 @@ class Stickerbook {
       drawing: true
     };
 
-    if (brushName === 'pattern') {
-      if (!brushConfig || Object.keys(brushConfig).indexOf('images') === -1) {
-        throw new Error('images configuration required for pattern brush');
+    if (brushConfig) {
+      newState.brushConfig = brushConfig;
+
+      // if there are validation rules for the brush's configuration, run a quick check
+      if (schema[brushName] !== undefined) {
+        validate(schema[brushName], brushConfig);
       }
-      newState.patternImages = brushConfig.images;
     }
 
     return this._setState(newState);
