@@ -26,7 +26,7 @@ var stickerbook = new Stickerbook({
     widths: [1, 10, 50],
     enabled: [
       'eraser',
-      'bitmap',
+      'bitmap-eraser',
       'fill',
       'marker',
       'pattern',
@@ -78,7 +78,7 @@ forEach(document.getElementById('brushes').childNodes, function (child) {
         });
       } else if(child.name === 'bitmap') {
         stickerbook.setBrushWidth(50);
-        stickerbook.setBrush('bitmap', { image: host + 'images/star.svg' });
+        stickerbook.setBrush('bitmap-eraser', { image: host + 'images/star.svg' });
       } else {
         stickerbook.setBrush(child.name);
       }

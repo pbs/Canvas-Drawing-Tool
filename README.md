@@ -43,6 +43,7 @@ var stickerBook = new Stickerbook({
     enabled: [
       'eraser',
       'bitmap',
+      'bitmap-eraser',
       'fill',
       'marker',
       'pattern',
@@ -152,6 +153,15 @@ stickerbook.setBrush('bitmap', {
 ```
 
 However, don't forget to enable this brush!
+
+##### Bitmap Eraser Brush
+The bitmap eraser behaves exactly like the bitmap brush, but works as an eraser instead:
+
+```javascript
+stickerbook.setBrush('bitmap-eraser', {
+  image: 'pathToSomeImage' // the image to sample
+});
+```
 
 ##### Pattern Brush
 The pattern brush takes an array of images and stamps them as the user drags their mouse/finger across the canvas. Here is an example configuration:
