@@ -1,5 +1,5 @@
-const MaskedBrushRenderer = require('./masked-brush-renderer');
-const MaskedPath = require('./masked-path');
+const MaskedBrushRenderer = require('../masked-brush-renderer');
+const MaskedPath = require('../masked-path');
 
 /**
  * A pencil brush that erases from the canvas

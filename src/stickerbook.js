@@ -7,12 +7,12 @@ const schema = {
 };
 
 const {BaseBrush, CircleBrush, PencilBrush, SprayBrush} = fabric;
-const BitmapBrush = require('./bitmap-brush');
-const FillBrush = require('./fill-brush');
+const BitmapBrush = require('./brushes/bitmap-brush');
+const FillBrush = require('./brushes/fill-brush');
 const BackgroundManager = require('./background-manager');
-const MarkerBrush = require('./marker-brush');
-const PatternBrush = require('./pattern-brush');
-const PencilEraserBrush = require('./pencil-eraser-brush');
+const MarkerBrush = require('./brushes/marker-brush');
+const PatternBrush = require('./brushes/pattern-brush');
+const PencilEraserBrush = require('./brushes/pencil-eraser-brush');
 const Promise = window.Promise || require('bluebird');
 const {
   disableSelectabilityHandler,
