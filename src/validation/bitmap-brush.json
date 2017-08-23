@@ -1,0 +1,12 @@
+{
+  "description" : "Bitmap brush configuration schema",
+  "type" : "object",
+  "required" : [
+    "image"
+  ],
+  "properties" : {
+    "image" : {
+      "type" : "string",
+    }
+  }
+}

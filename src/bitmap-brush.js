@@ -1,7 +1,7 @@
 const BitmapBrush = fabric.util.createClass(fabric.BaseBrush, {
   initialize: function (canvas, options) {
     this.canvas = canvas;
-    this.loadImage(options.imageUrl);
+    this.loadImage(options.image);
   },
 
   loadImage: function (url) {
