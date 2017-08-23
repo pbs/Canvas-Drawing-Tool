@@ -22,14 +22,10 @@ const BitmapBrush = fabric.util.createClass(fabric.BaseBrush, {
 
     // Now, update the raw image data to be the current color
     var rawImageData = context.getImageData(0, 0, image.width, image.height);
-    for(var i = 0; i < image.width; i++) {
-      for(var j = 0; j < image.height; j++) {
-        var pixel = 4 * (image.height * i + j);
-
-        rawImageData.data[pixel] = currentRgbaColor[0];
-        rawImageData.data[pixel + 1] = currentRgbaColor[1];
-        rawImageData.data[pixel + 2] = currentRgbaColor[2];
-      }
+    for(var i = 0; i < rawImageData.data.length; i += 4) {
+      rawImageData.data[i] = currentRgbaColor[0];
+      rawImageData.data[i + 1] = currentRgbaColor[1];
+      rawImageData.data[i + 2] = currentRgbaColor[2];
     }
     context.clearRect(0, 0, image.width, image.height);
     context.putImageData(rawImageData, 0, 0);
