@@ -2,15 +2,19 @@ const validate = require('./validation/validate');
 
 const schema = {
   stickerbook: require('./validation/stickerbook.json'),
-  pattern: require('./validation/pattern-brush.json')
+  pattern: require('./validation/pattern-brush.json'),
+  bitmap: require('./validation/bitmap-brush.json'),
+  'bitmap-eraser': require('./validation/bitmap-brush.json')
 };
 
 const {BaseBrush, CircleBrush, PencilBrush, SprayBrush} = fabric;
-const FillBrush = require('./fill-brush');
+const BitmapBrush = require('./brushes/bitmap-brush');
+const BitmapEraserBrush = require('./brushes/bitmap-eraser-brush');
+const FillBrush = require('./brushes/fill-brush');
 const BackgroundManager = require('./background-manager');
-const MarkerBrush = require('./marker-brush');
-const PatternBrush = require('./pattern-brush');
-const PencilEraserBrush = require('./pencil-eraser-brush');
+const MarkerBrush = require('./brushes/marker-brush');
+const PatternBrush = require('./brushes/pattern-brush');
+const PencilEraserBrush = require('./brushes/pencil-eraser-brush');
 const Promise = window.Promise || require('bluebird');
 const {
   disableSelectabilityHandler,
@@ -33,6 +37,8 @@ class Stickerbook {
     const configWithDefaults = this._applyDefaultConfigs(config);
 
     this.availableBrushes = {
+      bitmap: BitmapBrush,
+      'bitmap-eraser': BitmapEraserBrush,
       circle: CircleBrush,
       eraser: PencilEraserBrush,
       marker: MarkerBrush,
@@ -54,6 +60,7 @@ class Stickerbook {
     this.state = {
       brush: configWithDefaults.brush.enabled[0],
       brushWidth: configWithDefaults.brush.widths[0],
+      brushConfig: {},
       color: configWithDefaults.brush.colors[0],
       drawing: true,
       sticker: null,
