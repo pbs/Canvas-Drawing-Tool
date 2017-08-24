@@ -26,6 +26,7 @@ var stickerbook = new Stickerbook({
     widths: [1, 10, 50],
     enabled: [
       'eraser',
+      'bitmap',
       'bitmap-eraser',
       'fill',
       'marker',
@@ -65,20 +66,22 @@ document.getElementById('set-background').addEventListener('click', function () 
 // wire up brushes
 forEach(document.querySelectorAll('#brushes button'), function (child) {
   child.addEventListener('click', function () {
-    if (child.name === 'example-pattern') {
+    var brushConfig = {};
+
+    if(child.name === 'pattern') {
       stickerbook.setBrushWidth(50);
-      stickerbook.setBrush('pattern', {
+      brushConfig = {
         images: [
           host + 'images/coin.svg',
           host + 'images/star.svg'
         ]
-      });
-    } else if(child.name === 'bitmap') {
+      };
+    } else if(child.name === 'bitmap' || child.name === 'bitmap-eraser') {
       stickerbook.setBrushWidth(50);
-      stickerbook.setBrush('bitmap-eraser', { image: host + 'images/star.svg' });
-    } else {
-      stickerbook.setBrush(child.name);
+      brushConfig = { image: host + 'images/star.svg' };
     }
+
+    stickerbook.setBrush(child.name, brushConfig);
   });
 });
 
