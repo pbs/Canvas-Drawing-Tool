@@ -26,6 +26,7 @@ var stickerbook = new Stickerbook({
     widths: [1, 10, 50],
     enabled: [
       'eraser',
+      'bitmap',
       'bitmap-eraser',
       'fill',
       'marker',
@@ -48,12 +49,10 @@ stickerbook.backgroundManager.setPositioning('fit-height');
 stickerbook.setBrush('pencil');
 
 // Wire up stickers
-forEach(document.getElementById('stickers').childNodes, function (child) {
-  if (child.nodeName === 'IMG') {
-    child.addEventListener('click', function (event) {
-      stickerbook.setSticker(event.target.src);
-    });
-  }
+forEach(document.querySelectorAll('#stickers img'), function (child) {
+  child.addEventListener('click', function (event) {
+    stickerbook.setSticker(event.target.src);
+  });
 });
 
 // wire up the background images
@@ -65,25 +64,25 @@ document.getElementById('set-background').addEventListener('click', function () 
 });
 
 // wire up brushes
-forEach(document.getElementById('brushes').childNodes, function (child) {
-  if (child.nodeName === 'BUTTON') {
-    child.addEventListener('click', function () {
-      if (child.name === 'example-pattern') {
-        stickerbook.setBrushWidth(50);
-        stickerbook.setBrush('pattern', {
-          images: [
-            host + 'images/coin.svg',
-            host + 'images/star.svg'
-          ]
-        });
-      } else if(child.name === 'bitmap') {
-        stickerbook.setBrushWidth(50);
-        stickerbook.setBrush('bitmap-eraser', { image: host + 'images/star.svg' });
-      } else {
-        stickerbook.setBrush(child.name);
-      }
-    });
-  }
+forEach(document.querySelectorAll('#brushes button'), function (child) {
+  child.addEventListener('click', function () {
+    var brushConfig = {};
+
+    if(child.name === 'pattern') {
+      stickerbook.setBrushWidth(50);
+      brushConfig = {
+        images: [
+          host + 'images/coin.svg',
+          host + 'images/star.svg'
+        ]
+      };
+    } else if(child.name === 'bitmap' || child.name === 'bitmap-eraser') {
+      stickerbook.setBrushWidth(50);
+      brushConfig = { image: host + 'images/star.svg' };
+    }
+
+    stickerbook.setBrush(child.name, brushConfig);
+  });
 });
 
 // Wire up the color picker
