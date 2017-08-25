@@ -7,13 +7,17 @@ const sinon = require('sinon');
 const Stickerbook = require('../src/stickerbook');
 const historyFixture = require('./data/historyFixture.json');
 
+const images = {
+  star: 'data:image/gif;base64,R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7',
+  dot: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='
+};
+
 const createValidConfig = () => {
   return {
     container: document.createElement('div'),
     stickers: [
-      'http://www.example.com/images/A.png',
-      'http://www.example.com/images/B.png',
-      'http://www.example.com/images/C.png'
+      images.star,
+      images.dot
     ],
     brush: {
       widths: [1, 10],
@@ -21,7 +25,7 @@ const createValidConfig = () => {
       colors: ['#0000FF', '#FF0000'],
     },
     background: {
-      enabled: ['http://www.example.com/images/A.png'],
+      enabled: [images.dot],
       default: null
     },
     stickerControls: {
@@ -96,15 +100,14 @@ describe('Stickerbook', () => {
     const stickerbook = createStickerbook();
     const stickers = stickerbook.getAvailableStickers();
     expect(stickers).toEqual([
-      'http://www.example.com/images/A.png',
-      'http://www.example.com/images/B.png',
-      'http://www.example.com/images/C.png'
+      images.star,
+      images.dot
     ]);
   });
 
   it('sets a sticker', done => {
     const stickerbook = createStickerbook();
-    stickerbook.setSticker('http://www.example.com/images/A.png')
+    stickerbook.setSticker(images.dot)
       .then(function() {
         if(stickerbook.state.sticker !== null) {
           return done();
@@ -252,9 +255,9 @@ describe('Stickerbook', () => {
 
   it('sets an enabled background image', () => {
     const stickerbook = createStickerbook();
-    expect(stickerbook.getBackground()).toNotEqual('http://www.example.com/images/A.png');
-    stickerbook.setBackground('http://www.example.com/images/A.png');
-    expect(stickerbook.getBackground()).toEqual('http://www.example.com/images/A.png');
+    expect(stickerbook.getBackground()).toNotEqual(images.dot);
+    stickerbook.setBackground(images.dot);
+    expect(stickerbook.getBackground()).toEqual(images.dot);
   });
 
   it('does not set a non-enabled background image', () => {
@@ -267,15 +270,15 @@ describe('Stickerbook', () => {
 
   it('sets a default background image', () => {
     let config = createValidConfig();
-    config.background.default = 'http://www.example.com/images/A.png';
+    config.background.default = images.dot;
     const stickerbook = new Stickerbook(config);
-    expect(stickerbook.getBackground()).toEqual('http://www.example.com/images/A.png');
+    expect(stickerbook.getBackground()).toEqual(images.dot);
   });
 
   it('can remove an existing background image', () => {
     // set a background
     const stickerbook = createStickerbook();
-    stickerbook.setBackground('http://www.example.com/images/A.png');
+    stickerbook.setBackground(images.dot);
 
     stickerbook.setBackground(null);
     expect(stickerbook.getBackground()).toEqual(null);
@@ -313,7 +316,7 @@ describe('Stickerbook', () => {
   it('cannot place a sticker without a position', (done) => {
     const stickerbook = createStickerbook();
 
-    stickerbook.setSticker('http://www.example.com/images/A.png')
+    stickerbook.setSticker(images.star)
       .then(() => {
         var errorMessage = null;
         try {
@@ -333,7 +336,7 @@ describe('Stickerbook', () => {
   it('can place a sticker with a position', (done) => {
     const stickerbook = createStickerbook();
 
-    stickerbook.setSticker('http://www.example.com/images/A.png')
+    stickerbook.setSticker(images.dot)
       .then(() => {
         stickerbook.placeSticker({ x: 0, y: 0 });
         done();
