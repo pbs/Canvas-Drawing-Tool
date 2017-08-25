@@ -21,7 +21,7 @@ const createValidConfig = () => {
     ],
     brush: {
       widths: [1, 10],
-      enabled: ['eraser', 'fill', 'marker', 'pencil', 'spray'],
+      enabled: ['eraser', 'bitmap', 'fill', 'marker', 'pencil', 'spray'],
       colors: ['#0000FF', '#FF0000'],
     },
     background: {
@@ -129,6 +129,14 @@ describe('Stickerbook', () => {
     expect(stickerbook.state.brush).toEqual('eraser');
     stickerbook.setBrush('fill');
     expect(stickerbook.state.brush).toEqual('fill');
+  });
+
+  it('updates the brush when the configuration for a brush changes', () => {
+    const stickerbook = createStickerbook();
+    stickerbook.setBrush('bitmap', { image: images.dot });
+    var oldBrush = stickerbook._canvas.freeDrawingBrush;
+    stickerbook.setBrush('bitmap', { image: images.star });
+    expect(stickerbook._canvas.freeDrawingBrush).toNotBe(oldBrush);
   });
 
   it('sets brush width', () => {
