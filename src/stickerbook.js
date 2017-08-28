@@ -278,14 +278,7 @@ class Stickerbook {
    */
   _updateCanvasState() {
     const BrushClass = this.availableBrushes[this.state.brush];
-    const newBrushType = (
-      this._canvas.freeDrawingBrush.constructor.prototype !== BrushClass.prototype
-    );
-
-    if (newBrushType) {
-      const brush = new BrushClass(this._canvas, this.state.brushConfig);
-      this._canvas.freeDrawingBrush = brush;
-    }
+    this._canvas.freeDrawingBrush = new BrushClass(this._canvas, this.state.brushConfig);
 
     this._canvas.freeDrawingBrush.color = this.state.color;
     this._canvas.freeDrawingBrush.width = this.state.brushWidth;
