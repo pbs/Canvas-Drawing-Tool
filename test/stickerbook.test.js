@@ -9,7 +9,8 @@ const historyFixture = require('./data/historyFixture.json');
 
 const images = {
   star: 'data:image/gif;base64,R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7',
-  dot: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='
+  dot: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
+  box: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAAECAYAAACk7+45AAAAFElEQVQYV2NkYGD4z8DAwMCImwEASjQEAY/F9H0AAAAASUVORK5CYII='
 };
 
 const createValidConfig = () => {
@@ -137,6 +138,23 @@ describe('Stickerbook', () => {
     var oldBrush = stickerbook._canvas.freeDrawingBrush;
     stickerbook.setBrush('bitmap', { image: images.star });
     expect(stickerbook._canvas.freeDrawingBrush).toNotBe(oldBrush);
+  });
+
+  it('correctly detects the aspect ratio of the image, rather assuming a square image', (done) => {
+    const stickerbook = createStickerbook();
+    stickerbook.setBrush('bitmap', { image: images.box });
+
+    // wait for the image to decode (shouldn't take long)
+    setTimeout(() => {
+      var actualAspectRatio = stickerbook._canvas.freeDrawingBrush.aspectRatio;
+
+      // should be close to 0.5
+      if(Math.abs(actualAspectRatio - 0.5) < 0.001) {
+        done();
+      } else {
+        done(new Error(`Expected aspect ratio of 0.5, got ${actualAspectRatio}`));
+      }
+    }, 10);
   });
 
   it('sets brush width', () => {
