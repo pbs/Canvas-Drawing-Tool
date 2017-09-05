@@ -1,6 +1,7 @@
 const BitmapBrush = fabric.util.createClass(fabric.BaseBrush, {
   initialize: function (canvas, options) {
     this.canvas = canvas;
+    this.aspectRatio = 1;
     this.loadImage(options.image);
   },
 
@@ -31,6 +32,7 @@ const BitmapBrush = fabric.util.createClass(fabric.BaseBrush, {
     context.putImageData(rawImageData, 0, 0);
 
     this.bitmap = tempCanvas;
+    this.aspectRatio = image.width / image.height;
   },
 
   getRgbColor: function (color) {
@@ -48,11 +50,12 @@ const BitmapBrush = fabric.util.createClass(fabric.BaseBrush, {
       return;
     }
 
-    var drawSize = this.width * 2;
-    var x = pointer.x - drawSize / 2;
-    var y = pointer.y - drawSize / 2;
+    var drawWidth = this.width * 2;
+    var drawHeight = this.width / this.aspectRatio * 2;
+    var x = pointer.x - drawWidth / 2;
+    var y = pointer.y - drawHeight / 2;
 
-    this.canvas.contextTop.drawImage(this.bitmap, x, y, drawSize, drawSize);
+    this.canvas.contextTop.drawImage(this.bitmap, x, y, drawWidth, drawHeight);
   },
 
   onMouseDown: function (pointer) {
