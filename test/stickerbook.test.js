@@ -50,7 +50,6 @@ const createStickerbook = () => {
   return stickerbook;
 };
 
-
 describe('Stickerbook', () => {
   it('does not present config as part of public API', () => {
     const stickerbook = createStickerbook();
