@@ -71,6 +71,7 @@ class HistoryManager {
           }
 
           object.set(currentChange.data.property, currentChange.data.oldValue);
+          object.setCoords();
         }
         resolve(this);
       });
@@ -79,6 +80,7 @@ class HistoryManager {
     var promises = this.history[this.historyIndex].map(processChange);
     return Promise.all(promises).then(() => {
       this.historyIndex--;
+      this.canvas.renderAll();
       return;
     });
   }
@@ -111,6 +113,7 @@ class HistoryManager {
           }
 
           object.set(newChange.data.property, newChange.data.newValue);
+          object.setCoords();
           resolve(this);
         }
       });
@@ -119,6 +122,7 @@ class HistoryManager {
     var promises = this.history[this.historyIndex + 1].map(processChange)
     return Promise.all(promises).then(() => {
       this.historyIndex++;
+      this.canvas.renderAll();
       return this;
     });
   }

@@ -1,7 +1,3 @@
-const {
-  isAlreadyRecordedPath
-} = require('./util');
-
 const mouseDownHandler = function (evt) {
   if (this.state.drawing || this.state.sticker === null) {
     return this;
@@ -17,15 +13,6 @@ const mouseDownHandler = function (evt) {
   }
 
   return this.placeSticker(this._canvas.getPointer(evt.e));
-};
-
-const pathCreatedHandler = function (evt) {
-  // NOTE: fabric seems to send duplicate path:created events when using
-  // mouse events. We can filter out duplicates here.
-
-  if (!isAlreadyRecordedPath(evt.path, this.history)) {
-    this._snapshotToHistory();
-  }
 };
 
 const disableSelectabilityHandler = function (evt) {
@@ -65,6 +52,7 @@ const recordPropertyChange = function(historyManager, fabricEvent) {
   const displayListIndex = historyManager.canvas.getObjects().indexOf(fabricEvent.target);
   const flattenedHistory = historyManager.history.reduce((a, b) => a.concat(b), []);
   const index = flattenedHistory.map(historyEvent => historyEvent.objectId).indexOf(fabricEvent.target.stickerbookObjectId);
+  console.log('FLATTENED HISTORY:', flattenedHistory);
   const serializedValue = flattenedHistory[index].data;
   const unserializedValue = JSON.parse(serializedValue);
 
@@ -85,7 +73,6 @@ const recordPropertyChange = function(historyManager, fabricEvent) {
 module.exports = {
   disableSelectabilityHandler: disableSelectabilityHandler,
   mouseDownHandler: mouseDownHandler,
-  pathCreatedHandler: pathCreatedHandler,
   recordObjectAddition: recordObjectAddition,
   recordPropertyChange: recordPropertyChange
 };

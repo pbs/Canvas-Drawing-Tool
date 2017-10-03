@@ -19,9 +19,11 @@ const Promise = window.Promise || require('bluebird');
 const {
   disableSelectabilityHandler,
   mouseDownHandler,
-  pathCreatedHandler
+  recordObjectAddition,
+  recordPropertyChange
 } = require('./event-handlers');
 const { calculateInnerDimensions } = require('./util');
+const HistoryManager = require('./history-manager');
 
 class Stickerbook {
   /**
@@ -66,7 +68,6 @@ class Stickerbook {
       sticker: null,
       historyIndex: null
     };
-    this.history = [];
 
     this.containerElement = configWithDefaults.container;
 
@@ -76,6 +77,10 @@ class Stickerbook {
     // fabric requires us to explicitly set and manage height and width.
     // (http://stackoverflow.com/questions/10581460)
     this._canvas = this._initializeFabricCanvas(this.containerElement);
+
+    this.historyManager = new HistoryManager(this._canvas);
+    this._canvas.on('object:added', event => recordObjectAddition(this.historyManager, event));
+    this._canvas.on('object:modified', event => recordPropertyChange(this.historyManager, event));
 
     if (this._config.background && this._config.background.default) {
       this.setBackground(this._config.background.default);
@@ -132,9 +137,6 @@ class Stickerbook {
       }
     );
 
-    // we always want history, so wire up the pathCreatedHandler
-    canvas.on('path:created', pathCreatedHandler.bind(this));
-
     // more opinionated handlers, these can be deactivated by implementors
     if (this._config.useDefaultEventHandlers) {
       canvas.on('mouse:down', mouseDownHandler.bind(this));
@@ -147,24 +149,6 @@ class Stickerbook {
   }
 
   /**
-   * Serializes canvas state to this.history
-   *
-   * @returns {Object} Stickerbook
-   */
-  _snapshotToHistory() {
-    if (this.state.historyIndex !== null) {
-      // delete everything after historyIndex
-      this.history = this.history.slice(0, (this.state.historyIndex + 1));
-      // back at the front of history
-      this._setState({historyIndex: null});
-    }
-    const serialized = JSON.stringify(this._canvas);
-    this.history.push(serialized);
-
-    return this;
-  }
-
-  /**
    * Steps canvas back one step in history, if possible
    *
    * this method is asynchronous, because we need to give Fabric time to
@@ -173,50 +157,7 @@ class Stickerbook {
    * @returns {Object} Promise, which resolves to the Stickerbook
    */
   undo() {
-    const stickerbook = this;
-    if (this.history.length === 0) {
-      // nothing to do, return a resolved promise.
-      return new Promise((resolve) => {
-        resolve(stickerbook);
-      });
-    }
-
-    let targetHistoryIndex;
-
-    if (this.state.historyIndex === null) {
-      targetHistoryIndex = this.history.length - 2;
-    } else {
-      targetHistoryIndex = this.state.historyIndex - 1;
-    }
-
-    if (targetHistoryIndex < 0) {
-      // we're restoring to nothing
-
-      return new Promise((resolve, reject) => {
-        try {
-          stickerbook._setState({historyIndex: -1});
-          stickerbook._canvas.clear();
-          resolve(stickerbook);
-        } catch (e) {
-          reject(e);
-        }
-      });
-    } else {
-      // we have the target snapshot in memory
-
-      return new Promise((resolve, reject) => {
-        const targetSnapshot = stickerbook.history[targetHistoryIndex];
-        stickerbook._canvas.loadFromJSON(targetSnapshot, () => {
-          try {
-            stickerbook._setState({historyIndex: targetHistoryIndex});
-            stickerbook.triggerRender();
-            resolve(stickerbook);
-          } catch (e) {
-            reject(e);
-          }
-        });
-      });
-    }
+    return this.historyManager.undo().then(() => this);
   }
 
   /**
@@ -225,38 +166,7 @@ class Stickerbook {
    * @returns {Object} Promise, which resolves to the Stickerbook
    */
   redo() {
-    const stickerbook = this;
-    if (stickerbook.history.length === 0 || stickerbook.state.historyIndex === null) {
-      // nothing to do, return a resolved promise.
-      return new Promise((resolve) => {
-        resolve(stickerbook);
-      });
-    }
-
-    let targetHistoryIndex;
-    let targetSnapshot;
-
-    if (stickerbook.history.length === stickerbook.state.historyIndex + 2) {
-      // we are resetting to the front of history, targetHistoryIndex goes back
-      // to null
-      targetHistoryIndex = null;
-      targetSnapshot = stickerbook.history[stickerbook.history.length - 1];
-    } else {
-      targetHistoryIndex = stickerbook.state.historyIndex + 1;
-      targetSnapshot = stickerbook.history[targetHistoryIndex];
-    }
-
-    return new Promise((resolve, reject) => {
-      stickerbook._canvas.loadFromJSON(targetSnapshot, () => {
-        try {
-          stickerbook._setState({historyIndex: targetHistoryIndex});
-          stickerbook.triggerRender();
-          resolve(stickerbook);
-        } catch (e) {
-          reject(e);
-        }
-      });
-    });
+    return this.historyManager.redo().then(() => this);
   }
 
   /**
@@ -458,7 +368,6 @@ class Stickerbook {
 
   clear() {
     this._canvas.clear();
-    this._snapshotToHistory();
   }
 
   /**
@@ -625,7 +534,6 @@ class Stickerbook {
     }
 
     // add the sticker to the internal fabric canvas and reposition
-    this._canvas.add(this.state.sticker);
     this.state.sticker.set({
       left: options.x,
       top: options.y,
@@ -635,6 +543,7 @@ class Stickerbook {
       perPixelTargetFind: true
     });
     this.state.sticker.setCoords();
+    this._canvas.add(this.state.sticker);
 
     // if there are any sticker control configs, apply those styles
     if (this._config.stickerControls) {
@@ -655,9 +564,6 @@ class Stickerbook {
 
     // update state
     this._setState({ _stickerAdded: true });
-
-    // save this action so we can undo/redo
-    this._snapshotToHistory();
 
     // re-render
     return this.triggerRender();
