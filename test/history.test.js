@@ -57,8 +57,8 @@ describe('HistoryManager', () => {
 
       expect(historyManager.historyIndex).toEqual(1);
       expect(historyManager.history.length).toEqual(2);
-      expect(historyManager.history[0].data.property).toEqual('scaleX');
-      expect(historyManager.history[1].type).toEqual('add');
+      expect(historyManager.history[0][0].data.property).toEqual('scaleX');
+      expect(historyManager.history[1][0].type).toEqual('add');
     });
 
     it('should wipe any redoable state if a property is changed', () => {
@@ -72,8 +72,8 @@ describe('HistoryManager', () => {
 
       expect(historyManager.historyIndex).toEqual(1);
       expect(historyManager.history.length).toEqual(2);
-      expect(historyManager.history[0].data.property).toEqual('scaleX');
-      expect(historyManager.history[1].data.property).toEqual('scaleX');
+      expect(historyManager.history[0][0].data.property).toEqual('scaleX');
+      expect(historyManager.history[1][0].data.property).toEqual('scaleX');
     });
   });
 
@@ -138,6 +138,33 @@ describe('HistoryManager', () => {
       historyManager.redo().then(() => {
         expect(historyManager.historyIndex).toEqual(0);
         expect(path.stroke).toEqual('blue');
+        done();
+      }).catch(done);
+    });
+
+    it('should reapply multiple property changes if the next redo state has two things in it', (done) => {
+      var path = new fabric.Path('M 0 0', { stroke: 'red' });
+      historyManager.canvas.add(path);
+      historyManager.pushPropertyChanges([
+        {
+          objectIndex: 0,
+          property: 'stroke',
+          oldValue: 'red',
+          newValue: 'blue'
+        },
+        {
+          objectIndex: 0,
+          property: 'scaleX',
+          oldValue: 1,
+          newValue: 2
+        }
+      ]);
+      historyManager.historyIndex = -1;
+
+      historyManager.redo().then(() => {
+        expect(historyManager.historyIndex).toEqual(0);
+        expect(path.stroke).toEqual('blue');
+        expect(path.scaleX).toEqual(2);
         done();
       }).catch(done);
     });
