@@ -339,4 +339,6 @@ describe('Stickerbook', () => {
     expect(stickerbook.isDestroyed).toEqual(true);
     expect(stickerbook.containerElement.childNodes.length).toEqual(0);
   });
+
+  require('./history.test.js');
 });
