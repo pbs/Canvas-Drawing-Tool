@@ -42,8 +42,50 @@ const disableSelectabilityHandler = function (evt) {
   this.triggerRender();
 };
 
+const recordObjectAddition = function(historyManager, fabricEvent) {
+  // During a redo, the HistoryManager will automatically perform the canvas.add for us. We don't
+  // want to track history for this addition if it's a redo, because it'll cause duplicates in the
+  // stack
+  var serializedTarget = JSON.stringify(fabricEvent.target);
+  var objectAlreadyInHistory = historyManager.history
+    .reduce((a, b) => a.concat(b), []) // flatten the array
+    .filter(historyEvent => historyEvent.type === 'add') // only get add events
+    .some(historyEvent => historyEvent.data === serializedTarget) // see if the target is already there
+
+  if(objectAlreadyInHistory) {
+    return;
+  }
+
+  historyManager.pushNewFabricObject(fabricEvent.target);
+};
+
+const recordPropertyChange = function(historyManager, fabricEvent) {
+  const propertiesWeCareAbout = ['scaleX', 'scaleY', 'globalCompositeOperation', 'angle', 'left', 'top'];
+
+  const displayListIndex = historyManager.canvas.getObjects().indexOf(fabricEvent.target);
+  const flattenedHistory = historyManager.history.reduce((a, b) => a.concat(b), []);
+  const index = flattenedHistory.map(historyEvent => historyEvent.objectId).indexOf(fabricEvent.target.stickerbookObjectId);
+  const serializedValue = flattenedHistory[index].data;
+  const unserializedValue = JSON.parse(serializedValue);
+
+  let propertyDeltas = [];
+  propertiesWeCareAbout.forEach(function(property) {
+    if(unserializedValue[property] !== fabricEvent.target[property]) {
+      propertyDeltas.push({
+        property: property,
+        objectIndex: displayListIndex,
+        oldValue: unserializedValue[property],
+        newValue: fabricEvent.target[property]
+      });
+    }
+  });
+  historyManager.pushPropertyChanges(propertyDeltas);
+};
+
 module.exports = {
   disableSelectabilityHandler: disableSelectabilityHandler,
   mouseDownHandler: mouseDownHandler,
-  pathCreatedHandler: pathCreatedHandler
+  pathCreatedHandler: pathCreatedHandler,
+  recordObjectAddition: recordObjectAddition,
+  recordPropertyChange: recordPropertyChange
 };

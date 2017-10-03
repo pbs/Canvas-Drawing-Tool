@@ -36,6 +36,15 @@ describe('HistoryManager', () => {
 
       expect(historyManager.historyIndex).toEqual(0);
       expect(historyManager.history.length).toEqual(1);
+      expect(historyManager.history[0][0].type).toEqual('add');
+    });
+
+    it('should attach an object id', () => {
+      var path = new fabric.Path('M 0 0', { });
+      historyManager.pushNewFabricObject(path);
+
+      expect(historyManager.history[0][0].objectId).toNotEqual(undefined);
+      expect(path.stickerbookObjectId).toNotEqual(undefined);
     });
 
     it('should be able to store property changes', () => {
@@ -127,6 +136,21 @@ describe('HistoryManager', () => {
         expect(historyManager.historyIndex).toEqual(0);
         done();
       }).catch(done);
+    });
+
+    it('should recover the object id upon redo', (done) => {
+      var path = new fabric.Path('M 0 0', { stroke: 'red' });
+      historyManager.history.push([{
+        type: 'add',
+        data: JSON.stringify(path),
+        objectId: 12345
+      }]);
+
+      historyManager.redo().then(() => {
+        expect(historyManager.canvas.getObjects().length).toEqual(1);
+        expect(historyManager.canvas.getObjects()[0].stickerbookObjectId).toEqual(12345);
+        done();
+      }).catch(done)
     });
 
     it('should reapply a property change if the next undo state was a change', (done) => {

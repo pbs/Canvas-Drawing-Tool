@@ -5,6 +5,7 @@ class HistoryManager {
     this.history = [];
     this.historyIndex = -1;
     this.canvas = canvas;
+    this.objectIdCounter = 1;
   }
 
   pushNewFabricObject(fabricObject) {
@@ -12,11 +13,15 @@ class HistoryManager {
       this.history.splice(this.historyIndex + 1);
     }
 
+    fabricObject.stickerbookObjectId = this.objectIdCounter;
+
     this.history.push([{
       type: 'add',
-      data: JSON.stringify(fabricObject)
+      data: JSON.stringify(fabricObject),
+      objectId: this.objectIdCounter
     }]);
     this.historyIndex++;
+    this.objectIdCounter++;
   }
 
   pushPropertyChange(property, objectIndex, oldValue, newValue) {
@@ -92,6 +97,7 @@ class HistoryManager {
               reject(this);
               return;
             }
+            results[0].stickerbookObjectId = newChange.objectId;
             this.canvas.add(results[0]);
             resolve(this);
           });
