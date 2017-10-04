@@ -52,7 +52,6 @@ const recordPropertyChange = function(historyManager, fabricEvent) {
   const displayListIndex = historyManager.canvas.getObjects().indexOf(fabricEvent.target);
   const flattenedHistory = historyManager.history.reduce((a, b) => a.concat(b), []);
   const index = flattenedHistory.map(historyEvent => historyEvent.objectId).indexOf(fabricEvent.target.stickerbookObjectId);
-  console.log('FLATTENED HISTORY:', flattenedHistory);
   const serializedValue = flattenedHistory[index].data;
   const unserializedValue = JSON.parse(serializedValue);
 
