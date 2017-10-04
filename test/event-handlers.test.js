@@ -89,5 +89,24 @@ describe('EventHandlers', () => {
       expect(historyManager.history[1][1].data).toInclude({ property: 'angle',  oldValue: 0,  newValue: 10 });
       expect(historyManager.history[1][2].data).toInclude({ property: 'top',    oldValue: 20, newValue: 15 });
     });
+
+    it('should correct detect the last change event for a property as well', () => {
+      var path = new fabric.Path('M 0 0', { angle: 0, });
+      canvas.add(path);
+      historyManager.pushNewFabricObject(path);
+
+      // set a property on the path (should be auto-tracked in history)
+      path.set('angle', 10);
+      canvas.fire('object:modified', { target: path });
+
+      // set the property again
+      path.set('angle', 20);
+      canvas.fire('object:modified', { target: path });
+
+      expect(historyManager.history.length).toEqual(3);
+      expect(historyManager.history[2].length).toEqual(1);
+      expect(historyManager.history[2][0].data.oldValue).toEqual(10);
+      expect(historyManager.history[2][0].data.newValue).toEqual(20);
+    });
   });
 });

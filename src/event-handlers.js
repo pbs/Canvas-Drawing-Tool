@@ -46,24 +46,29 @@ const recordObjectAddition = function(historyManager, fabricEvent) {
   historyManager.pushNewFabricObject(fabricEvent.target);
 };
 
+const lastPropertyValue = function(historyManager, fabricObject, propertyName) {
+  const flattenedHistory = historyManager.history.reduce((a, b) => a.concat(b), []);
+  for(var i = flattenedHistory.length - 1; i >= 0; i--) {
+    var historyEvent = flattenedHistory[i];
+    if(historyEvent.type === 'add' && historyEvent.objectId === fabricObject.stickerbookObjectId) {
+      return JSON.parse(historyEvent.data)[propertyName];
+    } else if(historyEvent.type === 'change' && historyEvent.data.property === propertyName) {
+      return historyEvent.data.newValue;
+    }
+  }
+  return null;
+};
+
 const recordPropertyChange = function(historyManager, fabricEvent) {
   const propertiesWeCareAbout = ['scaleX', 'scaleY', 'globalCompositeOperation', 'angle', 'left', 'top'];
-
-  const displayListIndex = historyManager.canvas.getObjects().indexOf(fabricEvent.target);
-  const flattenedHistory = historyManager.history.reduce((a, b) => a.concat(b), []);
-  const index = flattenedHistory.map(historyEvent => historyEvent.objectId).indexOf(fabricEvent.target.stickerbookObjectId);
-  const serializedValue = flattenedHistory[index].data;
-  const unserializedValue = JSON.parse(serializedValue);
+  const objectIndex = historyManager.canvas.getObjects().indexOf(fabricEvent.target);
 
   let propertyDeltas = [];
   propertiesWeCareAbout.forEach(function(property) {
-    if(unserializedValue[property] !== fabricEvent.target[property]) {
-      propertyDeltas.push({
-        property: property,
-        objectIndex: displayListIndex,
-        oldValue: unserializedValue[property],
-        newValue: fabricEvent.target[property]
-      });
+    var oldValue = lastPropertyValue(historyManager, fabricEvent.target, property);
+    var newValue = fabricEvent.target[property];
+    if(oldValue !== newValue) {
+      propertyDeltas.push({ property, objectIndex, oldValue, newValue });
     }
   });
   historyManager.pushPropertyChanges(propertyDeltas);
