@@ -29,7 +29,7 @@ const disableSelectabilityHandler = function (evt) {
   this.triggerRender();
 };
 
-const recordObjectAddition = function(historyManager, fabricEvent) {
+const recordObjectAddition = function (historyManager, fabricEvent) {
   // During a redo, the HistoryManager will automatically perform the canvas.add for us. We don't
   // want to track history for this addition if it's a redo, because it'll cause duplicates in the
   // stack
@@ -37,7 +37,7 @@ const recordObjectAddition = function(historyManager, fabricEvent) {
   var objectAlreadyInHistory = historyManager.history
     .reduce((a, b) => a.concat(b), []) // flatten the array
     .filter(historyEvent => historyEvent.type === 'add') // only get add events
-    .some(historyEvent => historyEvent.data === serializedTarget) // see if the target is already there
+    .some(historyEvent => historyEvent.data === serializedTarget); // target is already there?
 
   if(objectAlreadyInHistory) {
     return;
@@ -46,7 +46,7 @@ const recordObjectAddition = function(historyManager, fabricEvent) {
   historyManager.pushNewFabricObject(fabricEvent.target);
 };
 
-const lastPropertyValue = function(historyManager, fabricObject, propertyName) {
+const lastPropertyValue = function (historyManager, fabricObject, propertyName) {
   const flattenedHistory = historyManager.history.reduce((a, b) => a.concat(b), []);
   for(var i = flattenedHistory.length - 1; i >= 0; i--) {
     var historyEvent = flattenedHistory[i];
@@ -59,12 +59,12 @@ const lastPropertyValue = function(historyManager, fabricObject, propertyName) {
   return null;
 };
 
-const recordPropertyChange = function(historyManager, fabricEvent) {
-  const propertiesWeCareAbout = ['scaleX', 'scaleY', 'globalCompositeOperation', 'angle', 'left', 'top'];
+const recordPropertyChange = function (historyManager, fabricEvent) {
+  const propertyNames = ['scaleX', 'scaleY', 'globalCompositeOperation', 'angle', 'left', 'top'];
   const objectIndex = historyManager.canvas.getObjects().indexOf(fabricEvent.target);
 
   let propertyDeltas = [];
-  propertiesWeCareAbout.forEach(function(property) {
+  propertyNames.forEach(function (property) {
     var oldValue = lastPropertyValue(historyManager, fabricEvent.target, property);
     var newValue = fabricEvent.target[property];
     if(oldValue !== newValue) {

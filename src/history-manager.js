@@ -35,7 +35,8 @@ class HistoryManager {
 
     // perform a quick validation
     var isValid = changes.every(change => {
-      return change.objectIndex !== undefined && change.property !== undefined && change.oldValue !== undefined && change.newValue !== undefined;
+      return change.objectIndex !== undefined && change.property !== undefined
+        && change.oldValue !== undefined && change.newValue !== undefined;
     });
 
     if(!isValid) {
@@ -57,7 +58,10 @@ class HistoryManager {
     const processChange = currentChange => {
       return new Promise((resolve, reject) => {
         if(currentChange.type === 'add') {
-          var oldItemIndex = this.canvas.getObjects().map(JSON.stringify).indexOf(currentChange.data);
+          var oldItemIndex = this.canvas.getObjects()
+            .map(JSON.stringify)
+            .indexOf(currentChange.data);
+
           if(oldItemIndex > -1) {
             this.canvas.remove(this.canvas.getObjects()[oldItemIndex]);
           }
@@ -117,9 +121,9 @@ class HistoryManager {
           resolve(this);
         }
       });
-    }
+    };
 
-    var promises = this.history[this.historyIndex + 1].map(processChange)
+    var promises = this.history[this.historyIndex + 1].map(processChange);
     return Promise.all(promises).then(() => {
       this.historyIndex++;
       this.canvas.renderAll();
