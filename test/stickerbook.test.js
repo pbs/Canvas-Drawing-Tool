@@ -5,7 +5,6 @@ const expect = require('expect');
 const sinon = require('sinon');
 
 const Stickerbook = require('../src/stickerbook');
-const historyFixture = require('./data/historyFixture.json');
 
 const { images, createValidConfig, createStickerbook } = require('./helpers.js');
 
