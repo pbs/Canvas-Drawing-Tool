@@ -5,51 +5,8 @@ const expect = require('expect');
 const sinon = require('sinon');
 
 const Stickerbook = require('../src/stickerbook');
-const historyFixture = require('./data/historyFixture.json');
 
-const images = {
-  star: 'data:image/gif;base64,R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7',
-  dot: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
-  box: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAAECAYAAACk7+45AAAAFElEQVQYV2NkYGD4z8DAwMCImwEASjQEAY/F9H0AAAAASUVORK5CYII='
-};
-
-const createValidConfig = () => {
-  return {
-    container: document.createElement('div'),
-    stickers: [
-      images.star,
-      images.dot
-    ],
-    brush: {
-      widths: [1, 10],
-      enabled: ['eraser', 'bitmap', 'fill', 'marker', 'pencil', 'spray'],
-      colors: ['#0000FF', '#FF0000'],
-    },
-    background: {
-      enabled: [images.dot],
-      default: null
-    },
-    stickerControls: {
-      cornerColor: 'rgba(0, 0, 0, 0.5)',
-      cornerSize: 20
-    },
-    useDefaultEventHandlers: true,
-    mobileEnabled: true
-  };
-};
-
-const createStickerbook = () => {
-  var stickerbook = new Stickerbook(createValidConfig());
-
-  // fake the dimensions of each of the canvas elements
-  stickerbook.backgroundManager._canvas.width = 100;
-  stickerbook.backgroundManager._canvas.height = 100;
-  stickerbook._canvas.lowerCanvasEl.width = 100;
-  stickerbook._canvas.lowerCanvasEl.height = 100;
-
-  return stickerbook;
-};
-
+const { images, createValidConfig, createStickerbook } = require('./helpers.js');
 
 describe('Stickerbook', () => {
   it('does not present config as part of public API', () => {
@@ -165,114 +122,6 @@ describe('Stickerbook', () => {
     expect(stickerbook.state.brushWidth).toEqual(10);
   });
 
-  it('calls undo safely with no history', () => {
-    const stickerbook = createStickerbook();
-
-    expect(stickerbook.history.length).toEqual(0);
-    expect(stickerbook.state.historyIndex).toEqual(null);
-
-    return stickerbook
-    .undo()
-    .then((s) => {
-      expect(s.history.length).toEqual(0);
-      expect(s.state.historyIndex).toEqual(null);
-      return true;
-    });
-  });
-
-  it('calls redo safely with no history', () => {
-    const stickerbook = createStickerbook();
-
-    expect(stickerbook.history.length).toEqual(0);
-    expect(stickerbook.state.historyIndex).toEqual(null);
-
-    return stickerbook
-    .redo()
-    .then((s) => {
-      expect(s.history.length).toEqual(0);
-      expect(s.state.historyIndex).toEqual(null);
-      return true;
-    });
-  });
-
-  it('walks back through history', () => {
-    const stickerbook = createStickerbook();
-    // hack in a fake history, to elide the challenge of faking canvas events
-    stickerbook.history = historyFixture;
-    const clearSpy = sinon.spy(stickerbook._canvas, 'clear');
-
-    expect(stickerbook.history.length).toEqual(6);
-    expect(stickerbook.state.historyIndex).toEqual(null);
-
-    return stickerbook.undo()
-    .then((s) => {
-      expect(s.history.length).toEqual(6);
-      expect(s.state.historyIndex).toEqual(4);
-      return stickerbook.undo();
-    })
-    .then((s) => {
-      expect(s.history.length).toEqual(6);
-      expect(s.state.historyIndex).toEqual(3);
-      expect(clearSpy.callCount).toEqual(2);
-      return stickerbook.undo();
-    })
-    .then((s) => {
-      expect(s.history.length).toEqual(6);
-      expect(s.state.historyIndex).toEqual(2);
-      expect(clearSpy.callCount).toEqual(3);
-      return stickerbook.undo();
-    })
-    .then((s) => {
-      expect(s.history.length).toEqual(6);
-      expect(s.state.historyIndex).toEqual(1);
-      return stickerbook.undo();
-    })
-    .then((s) => {
-      expect(s.history.length).toEqual(6);
-      expect(s.state.historyIndex).toEqual(0);
-      return stickerbook.undo();
-    })
-    .then((s) => {
-      expect(s.history.length).toEqual(6);
-      expect(s.state.historyIndex).toEqual(-1);
-      return stickerbook.undo();
-    })
-    .then((s) => {
-      expect(s.history.length).toEqual(6);
-      expect(s.state.historyIndex).toEqual(-1);
-      return true;
-    });
-  });
-
-  it('walks back and forward through history', () => {
-    const stickerbook = createStickerbook();
-    stickerbook.history = historyFixture;
-    expect(stickerbook.history.length).toEqual(6);
-    expect(stickerbook.state.historyIndex).toEqual(null);
-
-    return stickerbook.undo()
-    .then((s) => {
-      expect(s.history.length).toEqual(6);
-      expect(s.state.historyIndex).toEqual(4);
-      return stickerbook.undo();
-    })
-    .then((s) => {
-      expect(s.history.length).toEqual(6);
-      expect(s.state.historyIndex).toEqual(3);
-      return stickerbook.redo();
-    })
-    .then((s) => {
-      expect(s.history.length).toEqual(6);
-      expect(s.state.historyIndex).toEqual(4);
-      return stickerbook.redo();
-    })
-    .then((s) => {
-      expect(s.history.length).toEqual(6);
-      expect(s.state.historyIndex).toEqual(null);
-      return true;
-    });
-  });
-
   it('serializes canvas state to an image', () => {
     const stickerbook = createStickerbook();
     const image = stickerbook.toDataURL();
@@ -381,4 +230,7 @@ describe('Stickerbook', () => {
     expect(stickerbook.isDestroyed).toEqual(true);
     expect(stickerbook.containerElement.childNodes.length).toEqual(0);
   });
+
+  require('./history.test.js');
+  require('./event-handlers.test.js');
 });

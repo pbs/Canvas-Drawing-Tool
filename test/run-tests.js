@@ -10,6 +10,9 @@ page.onCallback = function(data) {
   if(data.failingTests && data.failingTests !== 0) {
     console.log(data.failingTests, 'tests failed');
     status = 1;
+
+    //fs.write('test-results.html', page.content, 'w');
+    page.render('export.png');
   }
   phantom.exit(status);
 };

@@ -1,7 +1,3 @@
-const {
-  isAlreadyRecordedPath
-} = require('./util');
-
 const mouseDownHandler = function (evt) {
   if (this.state.drawing || this.state.sticker === null) {
     return this;
@@ -19,15 +15,6 @@ const mouseDownHandler = function (evt) {
   return this.placeSticker(this._canvas.getPointer(evt.e));
 };
 
-const pathCreatedHandler = function (evt) {
-  // NOTE: fabric seems to send duplicate path:created events when using
-  // mouse events. We can filter out duplicates here.
-
-  if (!isAlreadyRecordedPath(evt.path, this.history)) {
-    this._snapshotToHistory();
-  }
-};
-
 const disableSelectabilityHandler = function (evt) {
   if (evt.target instanceof fabric.Image) {
     return;
@@ -42,8 +29,76 @@ const disableSelectabilityHandler = function (evt) {
   this.triggerRender();
 };
 
+/**
+ * Event handler to track when a new object is added to the fabric canvas
+ * @param {HistoryManager} historyManager The history manager to track the change in
+ * @param {Event} fabricEvent An object with a target property, which is a fabric.Object
+ * @return {void}
+ */
+const recordObjectAddition = function (historyManager, fabricEvent) {
+  // During a redo, the HistoryManager will automatically perform the canvas.add for us. We don't
+  // want to track history for this addition if it's a redo, because it'll cause duplicates in the
+  // stack
+  var serializedTarget = JSON.stringify(fabricEvent.target);
+  var objectAlreadyInHistory = historyManager.history
+    .reduce((a, b) => a.concat(b), []) // flatten the array
+    .filter(historyEvent => historyEvent.type === 'add') // only get add events
+    .some(historyEvent => historyEvent.data === serializedTarget); // target is already there?
+
+  if(objectAlreadyInHistory) {
+    return;
+  }
+
+  historyManager.pushNewFabricObject(fabricEvent.target);
+};
+
+/**
+ * Helper function to find the previous value of a particular property on a fabric.Object by
+ * trawling through past history
+ *
+ * @param {HistoryManager} historyManager The history manager, so we can look at changesets
+ * @param {fabric.Object} fabricObject The fabric object to check history for
+ * @param {String} propertyName The property name to look for a change for
+ * @returns {String|Number} The previous value of the property
+ */
+const lastPropertyValue = function (historyManager, fabricObject, propertyName) {
+  const flattenedHistory = historyManager.history.reduce((a, b) => a.concat(b), []);
+  for(var i = flattenedHistory.length - 1; i >= 0; i--) {
+    var historyEvent = flattenedHistory[i];
+    if(historyEvent.type === 'add' && historyEvent.objectId === fabricObject.stickerbookObjectId) {
+      return JSON.parse(historyEvent.data)[propertyName];
+    } else if(historyEvent.type === 'change' && historyEvent.data.property === propertyName) {
+      return historyEvent.data.newValue;
+    }
+  }
+  return null;
+};
+
+/**
+ * Handler to capture a property change on a fabric object, and store in history
+ *
+ * @param {HistoryManager} historyManager The history manager, for tracking changes
+ * @param {Event} fabricEvent An object with a target property, which is a fabric.Object
+ * @returns {void}
+ */
+const recordPropertyChange = function (historyManager, fabricEvent) {
+  const propertyNames = ['scaleX', 'scaleY', 'globalCompositeOperation', 'angle', 'left', 'top'];
+  const objectIndex = historyManager.canvas.getObjects().indexOf(fabricEvent.target);
+
+  let propertyDeltas = [];
+  propertyNames.forEach(function (property) {
+    var oldValue = lastPropertyValue(historyManager, fabricEvent.target, property);
+    var newValue = fabricEvent.target[property];
+    if(oldValue !== newValue) {
+      propertyDeltas.push({ property, objectIndex, oldValue, newValue });
+    }
+  });
+  historyManager.pushPropertyChanges(propertyDeltas);
+};
+
 module.exports = {
   disableSelectabilityHandler: disableSelectabilityHandler,
   mouseDownHandler: mouseDownHandler,
-  pathCreatedHandler: pathCreatedHandler
+  recordObjectAddition: recordObjectAddition,
+  recordPropertyChange: recordPropertyChange
 };

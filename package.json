@@ -1,6 +1,6 @@
 {
   "name": "pbs-kids-canvas-drawing",
-  "version": "2.2.2",
+  "version": "2.3.0",
   "description": "PBS Kids canvas manipulation library",
   "main": "index.js",
   "repository": "https://github.com/pbs/Canvas-Drawing-Tool",
