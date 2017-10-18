@@ -4,7 +4,6 @@ const bundle = require('./gulp/bundle');
 const concat = require('gulp-concat');
 const express = require('express');
 const gulp = require('gulp');
-const uglify = require('gulp-uglify');
 
 const path = {
   DEMO_DEST: './demo',
@@ -15,7 +14,7 @@ const path = {
 
 // Bundle tasks
 gulp.task('bundle-debug', () => bundle(path.ENTRY_POINT, 'stickerbook.combined.js', [path.TMP], true));
-gulp.task('bundle-release', () => bundle(path.ENTRY_POINT, 'stickerbook.dist.js', [path.TMP], true));
+gulp.task('bundle-release', () => bundle(path.ENTRY_POINT, 'stickerbook.dist.js', [path.TMP], false));
 gulp.task('bundle-test', () => bundle('test/stickerbook.test.js', 'stickerbook.test.bundle.js', [path.TMP], true));
 
 // concat tasks

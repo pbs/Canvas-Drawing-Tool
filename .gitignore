@@ -42,6 +42,7 @@ jspm_packages
 
 demo/*combined*
 test/stickerbook.test.bundle.js
+dist/stickerbook.test.bundle.js.map
 
 # clone directory of the fabric source for builds
 fabric
