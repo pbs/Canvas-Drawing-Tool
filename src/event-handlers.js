@@ -15,7 +15,7 @@ const mouseDownHandler = function (evt) {
   return this.placeSticker(this._canvas.getPointer(evt.e));
 };
 
-const mouseUpHandler = function(evt) {
+const mouseUpHandler = function () {
   let config = this._config.stickerControls || {};
   let noBorder = config.cornerSize === 0 || !config.hasBorders;
   if(this.state._stickerAdded && this.state.sticker.active && noBorder) {
@@ -23,7 +23,7 @@ const mouseUpHandler = function(evt) {
   }
 
   return this;
-}
+};
 
 const disableSelectabilityHandler = function (evt) {
   if (evt.target instanceof fabric.Image) {
