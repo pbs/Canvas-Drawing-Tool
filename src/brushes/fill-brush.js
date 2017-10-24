@@ -10,11 +10,14 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
    * @param {Object} options An options object
    * @param {Boolean} options.isAsync Whether or not the fill tool should be asynchronous or not
    *                                  (defaults to false)
+   * @param {Number} options.stepsPerFrame If async, the number of fill tool steps to be performed per frame
    * @return {undefined}
    */
   initialize: function (canvas, options) {
     this.canvas = canvas;
-    this.options = options;
+    this.options = options || {};
+    this.options.isAsync = this.options.isAsync || false;
+    this.options.stepsPerFrame = this.options.stepsPerFrame || 5;
     
     this.regionCells = [];
     this.keepPainting = false;
