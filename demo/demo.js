@@ -34,7 +34,7 @@ var stickerbook = new Stickerbook({
       'pencil',
       'spray'
     ],
-    colors: ['#0000FF', '#FF0000']
+    colors: ['#00c3f7', '#f41971', '#ffe000']
   },
   stickerControls: {
     cornerColor: 'rgba(0,0,0,0.5)',
