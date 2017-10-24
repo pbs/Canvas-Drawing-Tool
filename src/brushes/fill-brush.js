@@ -10,7 +10,8 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
    * @param {Object} options An options object
    * @param {Boolean} options.isAsync Whether or not the fill tool should be asynchronous or not
    *                                  (defaults to false)
-   * @param {Number} options.stepsPerFrame If async, the number of fill tool steps to be performed per frame
+   * @param {Number} options.stepsPerFrame If async, the number of fill tool steps to be performed
+   *                                       per frame
    * @return {undefined}
    */
   initialize: function (canvas, options) {
@@ -21,7 +22,7 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
     if(this.options.partialFill === undefined) {
       this.options.partialFill = true;
     }
-    
+
     this.regionCells = [];
     this.keepPainting = false;
   },
@@ -62,7 +63,8 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
    * @return {undefined}
    */
   onMouseUp: function () {
-    // if the options allow for a partial fill, stop the fill algorithm and go ahead and add the image
+    // if the options allow for a partial fill, stop the fill algorithm and go ahead and add the
+    // image
     if(this.options.partialFill) {
       this.keepPainting = false;
       this.addImage();
@@ -70,16 +72,19 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
   },
 
   /**
-   * Does a single animation step of the asynchronous fill algorithm by stepping the passed generator a few times,
-   * re-rendering, and then scheduling another draw call
-   * @param {Generator} generator A fuzzy selector generator object that notifies when selection is finished
+   * Does a single animation step of the asynchronous fill algorithm by stepping the passed
+   * generator a few times, re-rendering, and then scheduling another draw call
+   * @param {Generator} generator A fuzzy selector generator object that notifies when selection is
+   *                              finished
+   * @return {void}
    */
-  doAsyncAnimationStep: function(generator) {
+  doAsyncAnimationStep: function (generator) {
     if(!this.keepPainting) {
       return;
     }
 
-    let i = 0, current = { done: false, value: undefined };
+    let i = 0;
+    let current = { done: false, value: undefined };
     while(i < this.options.stepsPerFrame && !current.done) {
       current = generator.next();
       i++;
@@ -90,8 +95,8 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
     if(!current.done && this.keepPainting) {
       requestAnimationFrame(() => this.doAsyncAnimationStep(generator));
     } else if(current.done && !this.options.partialFill) {
-      // if we're not doing partial fill, onMouseUp will never add the image, but rather defer to the iteration to do
-      // it instead once it's finished working
+      // if we're not doing partial fill, onMouseUp will never add the image, but rather defer to
+      // the iteration to do it instead once it's finished working
       this.addImage();
     }
   },
@@ -101,7 +106,7 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
    * @param {RangeSet} selectedRegion The selected region to draw
    * @returns {void}
    */
-  drawRange: function(selectedRegion) {
+  drawRange: function (selectedRegion) {
     var ctx = this.canvas.contextTop;
     ctx.beginPath();
     ctx.strokeStyle = this.color;
@@ -117,10 +122,10 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
    * Takes the currently filled area, converts it to an image, and adds it to the canvas
    * @returns {Promise} A promise that resolves to the generated image
    */
-  addImage: function() {
+  addImage: function () {
     var dataUrl = this.canvas.contextTop.canvas.toDataURL();
 
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       fabric.Image.fromURL(dataUrl, (image) => {
         image.set({ selectable: false });
         this.canvas.add(image);
