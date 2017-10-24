@@ -35,30 +35,12 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
     var selector = new FuzzySelector(colorGrid);
 
     if(!this.options.isAsync) {
-      this.selectedRegion = selector.select(Math.round(pointer.x), Math.round(pointer.y), 10);
-      this.drawRange(this.selectedRegion);
+      let selectedRegion = selector.select(Math.round(pointer.x), Math.round(pointer.y), 10);
+      this.drawRange(selectedRegion);
     } else {
       var generator = selector.selectIteratively(Math.round(pointer.x), Math.round(pointer.y), 10);
       this.keepPainting = true;
-      let doSteps = () => {
-        if(!this.keepPainting) {
-          return;
-        }
-
-        let i = 0, current = { done: false, value: undefined };
-        while(i < this.options.stepsPerFrame && !current.done) {
-          current = generator.next();
-          i++;
-        }
-
-        this.drawRange(current.value);
-
-        if(!current.done && this.keepPainting) {
-          requestAnimationFrame(doSteps);
-        }
-      };
-
-      requestAnimationFrame(doSteps);
+      requestAnimationFrame(() => this.doAsyncAnimationStep(generator));
     }
   },
 
@@ -83,6 +65,29 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
       this.canvas.clearContext(this.canvas.contextTop);
       this.canvas.renderAll();
     });
+  },
+
+  /**
+   * Does a single animation step of the asynchronous fill algorithm by stepping the passed generator a few times,
+   * re-rendering, and then scheduling another draw call
+   * @param {Generator} generator A fuzzy selector generator object that notifies when selection is finished
+   */
+  doAsyncAnimationStep: function(generator) {
+    if(!this.keepPainting) {
+      return;
+    }
+
+    let i = 0, current = { done: false, value: undefined };
+    while(i < this.options.stepsPerFrame && !current.done) {
+      current = generator.next();
+      i++;
+    }
+
+    this.drawRange(current.value);
+
+    if(!current.done && this.keepPainting) {
+      requestAnimationFrame(() => this.doAsyncAnimationStep(generator));
+    }
   },
 
   /**
