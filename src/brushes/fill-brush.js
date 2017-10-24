@@ -36,16 +36,16 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
    */
   onMouseDown: function (pointer) {
     // Get the selected region
-    var lowerContext = this.canvas.lowerCanvasEl.getContext('2d');
-    var imageData = lowerContext.getImageData(0, 0, this.canvas.width, this.canvas.height);
-    var colorGrid = new ImageDataColorGrid(imageData);
-    var selector = new FuzzySelector(colorGrid);
+    let lowerContext = this.canvas.lowerCanvasEl.getContext('2d');
+    let imageData = lowerContext.getImageData(0, 0, this.canvas.width, this.canvas.height);
+    let colorGrid = new ImageDataColorGrid(imageData);
+    let selector = new FuzzySelector(colorGrid);
 
     if(!this.options.isAsync) {
       let selectedRegion = selector.select(Math.round(pointer.x), Math.round(pointer.y), 10);
       this.drawRange(selectedRegion);
     } else {
-      var generator = selector.selectIteratively(Math.round(pointer.x), Math.round(pointer.y), 10);
+      let generator = selector.selectIteratively(Math.round(pointer.x), Math.round(pointer.y), 10);
       this.keepPainting = true;
       requestAnimationFrame(() => this.doAsyncAnimationStep(generator));
     }
@@ -107,7 +107,7 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
    * @returns {void}
    */
   drawRange: function (selectedRegion) {
-    var ctx = this.canvas.contextTop;
+    let ctx = this.canvas.contextTop;
     ctx.beginPath();
     ctx.strokeStyle = this.color;
     selectedRegion.forEachRange(function (x, yRange) {
@@ -123,7 +123,7 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
    * @returns {Promise} A promise that resolves to the generated image
    */
   addImage: function () {
-    var dataUrl = this.canvas.contextTop.canvas.toDataURL();
+    let dataUrl = this.canvas.contextTop.canvas.toDataURL();
 
     return new Promise(resolve => {
       fabric.Image.fromURL(dataUrl, (image) => {
