@@ -18,6 +18,9 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
     this.options = options || {};
     this.options.isAsync = this.options.isAsync || false;
     this.options.stepsPerFrame = this.options.stepsPerFrame || 5;
+    if(this.options.partialFill === undefined) {
+      this.options.partialFill = true;
+    }
     
     this.regionCells = [];
     this.keepPainting = false;
@@ -59,14 +62,11 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
    * @return {undefined}
    */
   onMouseUp: function () {
-    this.keepPainting = false;
-
-    this.makeImage()
-      .then(image => {
-        this.canvas.add(image);
-        this.canvas.clearContext(this.canvas.contextTop);
-        this.canvas.renderAll();
-      });
+    // if the options allow for a partial fill, stop the fill algorithm and go ahead and add the image
+    if(this.options.partialFill) {
+      this.keepPainting = false;
+      this.addImage();
+    }
   },
 
   /**
@@ -89,6 +89,10 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
 
     if(!current.done && this.keepPainting) {
       requestAnimationFrame(() => this.doAsyncAnimationStep(generator));
+    } else if(current.done && !this.options.partialFill) {
+      // if we're not doing partial fill, onMouseUp will never add the image, but rather defer to the iteration to do
+      // it instead once it's finished working
+      this.addImage();
     }
   },
 
@@ -110,15 +114,18 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
   },
 
   /**
-   * Takes the currently filled area and converts it to an image
+   * Takes the currently filled area, converts it to an image, and adds it to the canvas
    * @returns {Promise} A promise that resolves to the generated image
    */
-  makeImage: function() {
+  addImage: function() {
     var dataUrl = this.canvas.contextTop.canvas.toDataURL();
 
     return new Promise((resolve, reject) => {
       fabric.Image.fromURL(dataUrl, (image) => {
         image.set({ selectable: false });
+        this.canvas.add(image);
+        this.canvas.clearContext(this.canvas.contextTop);
+        this.canvas.renderAll();
         resolve(image);
       });
     });

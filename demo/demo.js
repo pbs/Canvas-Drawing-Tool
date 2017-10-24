@@ -80,7 +80,7 @@ forEach(document.querySelectorAll('#brushes button'), function (child) {
       stickerbook.setBrushWidth(50);
       brushConfig = { image: host + 'images/star.svg' };
     } else if(child.name === 'fill') {
-      brushConfig = { isAsync: true, stepsPerFrame: 10 };
+      brushConfig = { isAsync: true, stepsPerFrame: 10, partialFill: false };
     }
 
     stickerbook.setBrush(child.name, brushConfig);
