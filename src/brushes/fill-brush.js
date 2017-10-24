@@ -61,13 +61,12 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
   onMouseUp: function () {
     this.keepPainting = false;
 
-    var dataUrl = this.canvas.contextTop.canvas.toDataURL();
-    fabric.Image.fromURL(dataUrl, (image) => {
-      image.set({ selectable: false });
-      this.canvas.add(image);
-      this.canvas.clearContext(this.canvas.contextTop);
-      this.canvas.renderAll();
-    });
+    this.makeImage()
+      .then(image => {
+        this.canvas.add(image);
+        this.canvas.clearContext(this.canvas.contextTop);
+        this.canvas.renderAll();
+      });
   },
 
   /**
@@ -108,6 +107,21 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
     });
     ctx.lineWidth = 2;
     ctx.stroke();
+  },
+
+  /**
+   * Takes the currently filled area and converts it to an image
+   * @returns {Promise} A promise that resolves to the generated image
+   */
+  makeImage: function() {
+    var dataUrl = this.canvas.contextTop.canvas.toDataURL();
+
+    return new Promise((resolve, reject) => {
+      fabric.Image.fromURL(dataUrl, (image) => {
+        image.set({ selectable: false });
+        resolve(image);
+      });
+    });
   }
 });
 
