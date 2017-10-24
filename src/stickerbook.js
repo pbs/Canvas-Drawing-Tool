@@ -19,6 +19,7 @@ const Promise = window.Promise || require('bluebird');
 const {
   disableSelectabilityHandler,
   mouseDownHandler,
+  mouseUpHandler,
   recordObjectAddition,
   recordPropertyChange
 } = require('./event-handlers');
@@ -140,6 +141,7 @@ class Stickerbook {
     // more opinionated handlers, these can be deactivated by implementors
     if (this._config.useDefaultEventHandlers) {
       canvas.on('mouse:down', mouseDownHandler.bind(this));
+      canvas.on('mouse:up', mouseUpHandler.bind(this));
     }
 
     // listen for objects to be added, so we can disable things from being selectable
