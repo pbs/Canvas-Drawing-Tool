@@ -36,18 +36,7 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
 
     if(!this.options.isAsync) {
       this.selectedRegion = selector.select(Math.round(pointer.x), Math.round(pointer.y), 10);
-
-      // now draw the selected region by drawing multiple scanlines based off of the RangeSet object
-      // returned
-      var ctx = this.canvas.contextTop;
-      ctx.beginPath();
-      ctx.strokeStyle = this.color;
-      this.selectedRegion.forEachRange(function (x, yRange) {
-        ctx.moveTo(x, yRange.min);
-        ctx.lineTo(x, yRange.max + 1);
-      });
-      ctx.lineWidth = 2;
-      ctx.stroke();
+      this.drawRange(this.selectedRegion);
     } else {
       var generator = selector.selectIteratively(Math.round(pointer.x), Math.round(pointer.y), 10);
       this.keepPainting = true;
@@ -62,17 +51,7 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
           i++;
         }
 
-        // now draw the selected region by drawing multiple scanlines based off of the RangeSet object
-        // returned
-        let ctx = this.canvas.contextTop;
-        ctx.beginPath();
-        ctx.strokeStyle = this.color;
-        current.value.forEachRange(function (x, yRange) {
-          ctx.moveTo(x, yRange.min);
-          ctx.lineTo(x, yRange.max + 1);
-        });
-        ctx.lineWidth = 2;
-        ctx.stroke();
+        this.drawRange(current.value);
 
         if(!current.done && this.keepPainting) {
           requestAnimationFrame(doSteps);
@@ -104,6 +83,23 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
       this.canvas.clearContext(this.canvas.contextTop);
       this.canvas.renderAll();
     });
+  },
+
+  /**
+   * Draws a currently selected region to the canvas by drawing each individual scan line
+   * @param {RangeSet} selectedRegion The selected region to draw
+   * @returns {void}
+   */
+  drawRange: function(selectedRegion) {
+    var ctx = this.canvas.contextTop;
+    ctx.beginPath();
+    ctx.strokeStyle = this.color;
+    selectedRegion.forEachRange(function (x, yRange) {
+      ctx.moveTo(x, yRange.min);
+      ctx.lineTo(x, yRange.max + 1);
+    });
+    ctx.lineWidth = 2;
+    ctx.stroke();
   }
 });
 
