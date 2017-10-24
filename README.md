@@ -175,6 +175,42 @@ stickerbook.setBrush('pattern', {
 })
 ```
 
+##### Fill Brush
+The fill brush allows you to configure some of its behavior. Since the fill algorithm is computationally expensive, in some circumstances it's
+better to spread the fill algorithm's intermediate work over multiple frames. This has the benefits of:
+1) Keeping framerate up and
+2) Giving the user feedback on the progress of a long-running task.
+
+By default, the fill tool is configured to do all the work on a single frame. For a smaller canvas, or on desktop, this may be sufficient. This is the default behavior:
+```
+stickerbook.setBrush('fill');
+```
+
+There is, however a way to spread this work over multiple frames. Consider the following configuration:
+```
+stickerbook.setBrush('fill', {
+    isAsync: true,
+    stepsPerFrame: 10,
+    partialFill: false
+});
+```
+
+In this case the fill tool will animate it's progress, but stop animating when you mouse up or touch end (the default behavior). This means
+that the filled region might not be completely finished, but stopped on the end of user interaction. Moreover, the algorithm
+will attempt to fill 10 scanlines per frame (the default if don't provide `stepsPerFrame` configuration).
+
+Now, consider this other configuration:
+```
+stickerbook.setBrush('fill', {
+    isAsync: true,
+    stepsPerFrame: 10,
+    partialFill: true
+});
+```
+
+In this case the fill tool will animate it's progress, and _keep going_ even when the user mouses up (or touch end). The image will
+be added whenever the algorithm finishes.
+
 ### Exporting
 You can also export the stickerbook to a data url for saving, printing, whatever like so:
 
