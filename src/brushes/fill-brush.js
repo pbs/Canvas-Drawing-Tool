@@ -7,11 +7,17 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
   /**
    * Main constructor
    * @param {fabric.Canvas} canvas The canvas object to write to with this brush
+   * @param {Object} options An options object
+   * @param {Boolean} options.isAsync Whether or not the fill tool should be asynchronous or not
+   *                                  (defaults to false)
    * @return {undefined}
    */
-  initialize: function (canvas) {
+  initialize: function (canvas, options) {
     this.canvas = canvas;
+    this.options = options;
+    
     this.regionCells = [];
+    this.keepPainting = false;
   },
 
   /**
@@ -27,19 +33,54 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
     var imageData = lowerContext.getImageData(0, 0, this.canvas.width, this.canvas.height);
     var colorGrid = new ImageDataColorGrid(imageData);
     var selector = new FuzzySelector(colorGrid);
-    this.selectedRegion = selector.select(Math.round(pointer.x), Math.round(pointer.y), 10);
 
-    // now draw the selected region by drawing multiple scanlines based off of the RangeSet object
-    // returned
-    var ctx = this.canvas.contextTop;
-    ctx.beginPath();
-    ctx.strokeStyle = this.color;
-    this.selectedRegion.forEachRange(function (x, yRange) {
-      ctx.moveTo(x, yRange.min);
-      ctx.lineTo(x, yRange.max + 1);
-    });
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    if(!this.options.isAsync) {
+      this.selectedRegion = selector.select(Math.round(pointer.x), Math.round(pointer.y), 10);
+
+      // now draw the selected region by drawing multiple scanlines based off of the RangeSet object
+      // returned
+      var ctx = this.canvas.contextTop;
+      ctx.beginPath();
+      ctx.strokeStyle = this.color;
+      this.selectedRegion.forEachRange(function (x, yRange) {
+        ctx.moveTo(x, yRange.min);
+        ctx.lineTo(x, yRange.max + 1);
+      });
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    } else {
+      var generator = selector.selectIteratively(Math.round(pointer.x), Math.round(pointer.y), 10);
+      this.keepPainting = true;
+      let doSteps = () => {
+        if(!this.keepPainting) {
+          return;
+        }
+
+        let i = 0, current = { done: false, value: undefined };
+        while(i < this.options.stepsPerFrame && !current.done) {
+          current = generator.next();
+          i++;
+        }
+
+        // now draw the selected region by drawing multiple scanlines based off of the RangeSet object
+        // returned
+        let ctx = this.canvas.contextTop;
+        ctx.beginPath();
+        ctx.strokeStyle = this.color;
+        current.value.forEachRange(function (x, yRange) {
+          ctx.moveTo(x, yRange.min);
+          ctx.lineTo(x, yRange.max + 1);
+        });
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        if(!current.done && this.keepPainting) {
+          requestAnimationFrame(doSteps);
+        }
+      };
+
+      requestAnimationFrame(doSteps);
+    }
   },
 
   /**
@@ -54,6 +95,8 @@ const FillBrush = fabric.util.createClass(fabric.BaseBrush, {
    * @return {undefined}
    */
   onMouseUp: function () {
+    this.keepPainting = false;
+
     var dataUrl = this.canvas.contextTop.canvas.toDataURL();
     fabric.Image.fromURL(dataUrl, (image) => {
       image.set({ selectable: false });

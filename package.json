@@ -17,7 +17,7 @@
   "dependencies": {
     "ajv": "^4.7.7",
     "bluebird": "^3.4.1",
-    "fuzzy-select": "pbs/fuzzy-select.git#1.0.0"
+    "fuzzy-select": "pbs/fuzzy-select.git#1.1.0"
   },
   "devDependencies": {
     "babel-eslint": "6.0.4",

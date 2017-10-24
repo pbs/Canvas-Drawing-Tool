@@ -4,7 +4,8 @@ const schema = {
   stickerbook: require('./validation/stickerbook.json'),
   pattern: require('./validation/pattern-brush.json'),
   bitmap: require('./validation/bitmap-brush.json'),
-  'bitmap-eraser': require('./validation/bitmap-brush.json')
+  'bitmap-eraser': require('./validation/bitmap-brush.json'),
+  fill: require('./validation/fill-brush.json')
 };
 
 const {BaseBrush, CircleBrush, PencilBrush, SprayBrush} = fabric;

@@ -79,6 +79,8 @@ forEach(document.querySelectorAll('#brushes button'), function (child) {
     } else if(child.name === 'bitmap' || child.name === 'bitmap-eraser') {
       stickerbook.setBrushWidth(50);
       brushConfig = { image: host + 'images/star.svg' };
+    } else if(child.name === 'fill') {
+      brushConfig = { isAsync: true, stepsPerFrame: 10 };
     }
 
     stickerbook.setBrush(child.name, brushConfig);
