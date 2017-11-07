@@ -43794,10 +43794,15 @@ var FillBrush = fabric.util.createClass(fabric.BaseBrush, {
     var current = { done: false, value: undefined };
     while (i < this.options.stepsPerFrame && !current.done) {
       current = generator.next();
+      var ctx = this.canvas.contextTop;
+      ctx.beginPath();
+      ctx.strokeStyle = this.color;
+      ctx.moveTo(current.value.last.x, current.value.last.range.min);
+      ctx.lineTo(current.value.last.x, current.value.last.range.max);
+      ctx.lineWidth = 2;
+      ctx.stroke();
       i++;
     }
-
-    this.drawRange(current.value);
 
     if (!current.done && this.keepPainting) {
       requestAnimationFrame(function () {
