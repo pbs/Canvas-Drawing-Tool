@@ -1,6 +1,6 @@
 {
   "name": "pbs-kids-canvas-drawing",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "description": "PBS Kids canvas manipulation library",
   "main": "index.js",
   "repository": "https://github.com/pbs/Canvas-Drawing-Tool",
@@ -17,7 +17,7 @@
   "dependencies": {
     "ajv": "^4.7.7",
     "bluebird": "^3.4.1",
-    "fuzzy-select": "pbs/fuzzy-select.git#1.0.0"
+    "fuzzy-select": "pbs/fuzzy-select.git#1.2.0"
   },
   "devDependencies": {
     "babel-eslint": "6.0.4",

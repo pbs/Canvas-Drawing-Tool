@@ -34,7 +34,7 @@ var stickerbook = new Stickerbook({
       'pencil',
       'spray'
     ],
-    colors: ['#0000FF', '#FF0000']
+    colors: ['#00c3f7', '#f41971', '#ffe000']
   },
   stickerControls: {
     cornerColor: 'rgba(0,0,0,0.5)',
@@ -79,6 +79,8 @@ forEach(document.querySelectorAll('#brushes button'), function (child) {
     } else if(child.name === 'bitmap' || child.name === 'bitmap-eraser') {
       stickerbook.setBrushWidth(50);
       brushConfig = { image: host + 'images/star.svg' };
+    } else if(child.name === 'fill') {
+      brushConfig = { isAsync: true, stepsPerFrame: 10, partialFill: false };
     }
 
     stickerbook.setBrush(child.name, brushConfig);

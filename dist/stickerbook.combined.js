@@ -40658,73 +40658,127 @@ var FuzzySelector = function(colorGrid) {
  * @return {RangeSet} A set of scanlines that are in the fuzzy selected region
  */
 FuzzySelector.prototype.select = function(x, y, tolerance) {
+  var selector = this.selectIteratively(x, y, tolerance);
+  var current = { done: false, value: undefined };
+  while(!current.done) {
+    current = selector.next();
+  }
+  return current.value;
+};
+
+/**
+ * Selects a region based a "color delta" defined in `colorDistance`. First, selects the color that is being pointed to
+ * by the passed cell, and then selects neighboring points by ensuring they are with a color distance tolerance
+ * specified by the passed parameter. This parameter defaults to 0. 
+ * @param {Number} x The x position to select from
+ * @param {Number} y The y position to select from
+ * @param {Number} tolerance The tolerance for allowing colors
+ * @return {Generator} A generator that terminates when the selector is done
+ */
+FuzzySelector.prototype.selectIteratively = function(x, y, tolerance) {
   tolerance = tolerance || 0;
 
-  var selector = this;
   var visited = new RangeSet;
   var needToVisit = [ { x: x, y: y }];
-  var cellColor = selector.colorGrid.getXY(x, y);
+  var cellColor = this.colorGrid.getXY(x, y);
 
-  var isVisited = function(x, y) {
-    return visited.contains(x, y);
-  }
-
-  var withinTolerance = function(x, y) {
-    var color = selector.colorGrid.getXY(x, y);
-    return FuzzySelector.colorDistance(cellColor, color) < tolerance;
+  var selector = this;
+  var generator = {
+    value: visited,
+    done: false,
+    next: function() {
+      selector.doIterativeStep(generator.value, needToVisit, cellColor, tolerance);
+      generator.done = needToVisit.length < 1;
+      return generator;
+    }
   };
 
-  while(needToVisit.length > 0) {
-    var current = needToVisit.pop();
-    var x = current.x;
-    var y = current.y;
+  return generator;
+};
 
-    // march north until we hit the top or a color boundary
-    while(y >= 0 && withinTolerance(x, y)) {
-      y--;
-    }
-    y++;
+/**
+ * Performs a single step of the selection algorithm
+ * @param {RangeSet} visited The currently visited locations
+ * @param {Array} needToVisit The array of { x, y } locations that need to be checked
+ * @param {Object} cellColor An { r, g, b } object representing the color that we're selecting
+ * @param {Number} tolerance The tolerance for rejecting or keeping a color
+ */
+FuzzySelector.prototype.doIterativeStep = function(visited, needToVisit, cellColor, tolerance) {
+  var current = needToVisit.pop();
+  var x = current.x;
+  var y = current.y;
 
-    var topY = y;
+  // march north until we hit the top or a color boundary
+  while(y >= 0 && this.cellInTolerance(x, y, cellColor, tolerance)) {
+    y--;
+  }
+  y++;
 
-    var left = x - 1, right = x + 1;
-    var leftInBounds = left >= 0;
-    var rightInBounds = right < selector.colorGrid.imageData.width;
-    var tryReachLeft = true, tryReachRight = true;
+  var topY = y;
 
-    // while y is in bounds?
-    while(y < selector.colorGrid.imageData.height && withinTolerance(x, y)) {
-      if(leftInBounds) {
-        var leftInTolerance = withinTolerance(left, y);
-        
-        if(tryReachLeft && leftInTolerance && !isVisited(left, y)) {
-          needToVisit.push({ x: left, y: y });
-          tryReachLeft = false;
-        } else if(!tryReachLeft && !leftInTolerance) {
-          tryReachLeft = true;
-        }
-      }
+  var left = x - 1;
+  var leftInBounds = left >= 0;
+  var tryReachLeft = true;
+
+  y = topY;
+  if(left >= 0) {
+    while(y < this.colorGrid.imageData.height && this.cellInTolerance(x, y, cellColor, tolerance)) {
+      var leftInTolerance = this.cellInTolerance(left, y, cellColor, tolerance);
       
-      if(rightInBounds) {
-        var rightInTolerance = withinTolerance(right, y);
-        
-        if(tryReachRight && rightInTolerance && !isVisited(right, y)) {
-          needToVisit.push({ x: right, y: y });
-          tryReachRight = false;
-        } else if(!tryReachRight && !rightInTolerance) {
-          tryReachRight = true;
-        }
+      if(tryReachLeft && leftInTolerance && !visited.contains(left, y)) {
+        needToVisit.push({ x: left, y: y });
+        tryReachLeft = false;
+      } else if(!tryReachLeft && !leftInTolerance) {
+        tryReachLeft = true;
       }
 
       y++;
     }
-    y--;
-    var bottomY = y;
-
-    visited.add(new Range(topY, bottomY), x);
   }
+  y--;
+
+  var leftY = y;
+
+  y = topY;
+  // while y is in bounds?
+  var tryReachRight = true;
+  var right = x + 1;
+  var rightInBounds = right < this.colorGrid.imageData.width;
+  if(rightInBounds) {
+    while(y < this.colorGrid.imageData.height && this.cellInTolerance(x, y, cellColor, tolerance)) {
+      var rightInTolerance = this.cellInTolerance(right, y, cellColor, tolerance);
+      
+      if(tryReachRight && rightInTolerance && !visited.contains(right, y)) {
+        needToVisit.push({ x: right, y: y });
+        tryReachRight = false;
+      } else if(!tryReachRight && !rightInTolerance) {
+        tryReachRight = true;
+      }
+
+      y++;
+    }
+  }
+  y--;
+
+  var rightY = y
+  var bottomY = Math.max(rightY, leftY);
+
+  visited.add(new Range(topY, bottomY), x);
 
   return visited;
+};
+
+/**
+ * Returns true if a cell is tolerance of a reference cell
+ *
+ * @param {Number} x The x coordinate of a cell
+ * @param {Number} y The y coordinate of a cell
+ * @param {Object} referenceColor An object with a r, g, and b keys representing a color
+ * @param {Number} tolerance The value the color distance must be under
+ */
+FuzzySelector.prototype.cellInTolerance = function(x, y, referenceColor, tolerance) {
+  var color = this.colorGrid.getXY(x, y);
+  return FuzzySelector.colorDistance(referenceColor, color) < tolerance;
 };
 
 FuzzySelector.washOutColor = function(component, alpha) {
@@ -41005,6 +41059,7 @@ var CellSet = require('./CellSet');
  */
 var RangeSet = function() {
   this.ranges = {};
+  this._last = null;
 };
 
 /**
@@ -41018,6 +41073,11 @@ RangeSet.prototype.add = function(range, x) {
   }
 
   this.ranges[x].push(range);
+
+  this._last = {
+    x: x,
+    range: range
+  };
 };
 
 /**
@@ -41082,6 +41142,20 @@ RangeSet.prototype.toPathString = function() {
   });
   return path;
 };
+
+/**
+ * Retrieves the last value added to the range set for iterative drawing improvements
+ * @return {Object}
+ * @return {Object.x} The x value of the scanline
+ * @return {Object.range} The range set of the scanline
+ */
+Object.defineProperty(RangeSet.prototype, 'last', {
+  get: function() {
+    return this._last;
+  },
+  enumerable: true,
+  configurable: true
+});
 
 module.exports = RangeSet;
 
@@ -43273,7 +43347,7 @@ module.exports = {
 },{}],64:[function(require,module,exports){
 module.exports={
   "name": "pbs-kids-canvas-drawing",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "description": "PBS Kids canvas manipulation library",
   "main": "index.js",
   "repository": "https://github.com/pbs/Canvas-Drawing-Tool",
@@ -43290,7 +43364,7 @@ module.exports={
   "dependencies": {
     "ajv": "^4.7.7",
     "bluebird": "^3.4.1",
-    "fuzzy-select": "pbs/fuzzy-select.git#1.0.0"
+    "fuzzy-select": "pbs/fuzzy-select.git#1.2.0"
   },
   "devDependencies": {
     "babel-eslint": "6.0.4",
@@ -43635,11 +43709,24 @@ var FillBrush = fabric.util.createClass(fabric.BaseBrush, {
   /**
    * Main constructor
    * @param {fabric.Canvas} canvas The canvas object to write to with this brush
+   * @param {Object} options An options object
+   * @param {Boolean} options.isAsync Whether or not the fill tool should be asynchronous or not
+   *                                  (defaults to false)
+   * @param {Number} options.stepsPerFrame If async, the number of fill tool steps to be performed
+   *                                       per frame
    * @return {undefined}
    */
-  initialize: function initialize(canvas) {
+  initialize: function initialize(canvas, options) {
     this.canvas = canvas;
+    this.options = options || {};
+    this.options.isAsync = this.options.isAsync || false;
+    this.options.stepsPerFrame = this.options.stepsPerFrame || 5;
+    if (this.options.partialFill === undefined) {
+      this.options.partialFill = true;
+    }
+
     this.regionCells = [];
+    this.keepPainting = false;
   },
 
   /**
@@ -43650,24 +43737,24 @@ var FillBrush = fabric.util.createClass(fabric.BaseBrush, {
    * @return {undefined}
    */
   onMouseDown: function onMouseDown(pointer) {
+    var _this = this;
+
     // Get the selected region
     var lowerContext = this.canvas.lowerCanvasEl.getContext('2d');
     var imageData = lowerContext.getImageData(0, 0, this.canvas.width, this.canvas.height);
     var colorGrid = new ImageDataColorGrid(imageData);
     var selector = new FuzzySelector(colorGrid);
-    this.selectedRegion = selector.select(Math.round(pointer.x), Math.round(pointer.y), 10);
 
-    // now draw the selected region by drawing multiple scanlines based off of the RangeSet object
-    // returned
-    var ctx = this.canvas.contextTop;
-    ctx.beginPath();
-    ctx.strokeStyle = this.color;
-    this.selectedRegion.forEachRange(function (x, yRange) {
-      ctx.moveTo(x, yRange.min);
-      ctx.lineTo(x, yRange.max + 1);
-    });
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    if (!this.options.isAsync) {
+      var selectedRegion = selector.select(Math.round(pointer.x), Math.round(pointer.y), 10);
+      this.drawRange(selectedRegion);
+    } else {
+      var generator = selector.selectIteratively(Math.round(pointer.x), Math.round(pointer.y), 10);
+      this.keepPainting = true;
+      requestAnimationFrame(function () {
+        return _this.doAsyncAnimationStep(generator);
+      });
+    }
   },
 
   /**
@@ -43681,14 +43768,87 @@ var FillBrush = fabric.util.createClass(fabric.BaseBrush, {
    * @return {undefined}
    */
   onMouseUp: function onMouseUp() {
-    var _this = this;
+    // if the options allow for a partial fill, stop the fill algorithm and go ahead and add the
+    // image
+    if (this.options.partialFill) {
+      this.keepPainting = false;
+      this.addImage();
+    }
+  },
+
+  /**
+   * Does a single animation step of the asynchronous fill algorithm by stepping the passed
+   * generator a few times, re-rendering, and then scheduling another draw call
+   * @param {Generator} generator A fuzzy selector generator object that notifies when selection is
+   *                              finished
+   * @return {void}
+   */
+  doAsyncAnimationStep: function doAsyncAnimationStep(generator) {
+    var _this2 = this;
+
+    if (!this.keepPainting) {
+      return;
+    }
+
+    var i = 0;
+    var current = { done: false, value: undefined };
+    while (i < this.options.stepsPerFrame && !current.done) {
+      current = generator.next();
+      var ctx = this.canvas.contextTop;
+      ctx.beginPath();
+      ctx.strokeStyle = this.color;
+      ctx.moveTo(current.value.last.x, current.value.last.range.min);
+      ctx.lineTo(current.value.last.x, current.value.last.range.max);
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      i++;
+    }
+
+    if (!current.done && this.keepPainting) {
+      requestAnimationFrame(function () {
+        return _this2.doAsyncAnimationStep(generator);
+      });
+    } else if (current.done && !this.options.partialFill) {
+      // if we're not doing partial fill, onMouseUp will never add the image, but rather defer to
+      // the iteration to do it instead once it's finished working
+      this.addImage();
+    }
+  },
+
+  /**
+   * Draws a currently selected region to the canvas by drawing each individual scan line
+   * @param {RangeSet} selectedRegion The selected region to draw
+   * @returns {void}
+   */
+  drawRange: function drawRange(selectedRegion) {
+    var ctx = this.canvas.contextTop;
+    ctx.beginPath();
+    ctx.strokeStyle = this.color;
+    selectedRegion.forEachRange(function (x, yRange) {
+      ctx.moveTo(x, yRange.min);
+      ctx.lineTo(x, yRange.max + 1);
+    });
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  },
+
+  /**
+   * Takes the currently filled area, converts it to an image, and adds it to the canvas
+   * @returns {Promise} A promise that resolves to the generated image
+   */
+  addImage: function addImage() {
+    var _this3 = this;
 
     var dataUrl = this.canvas.contextTop.canvas.toDataURL();
-    fabric.Image.fromURL(dataUrl, function (image) {
-      image.set({ selectable: false });
-      _this.canvas.add(image);
-      _this.canvas.clearContext(_this.canvas.contextTop);
-      _this.canvas.renderAll();
+
+    return new Promise(function (resolve) {
+      fabric.Image.fromURL(dataUrl, function (image) {
+        image.set({ selectable: false });
+        _this3.canvas.add(image);
+        _this3.canvas.clearContext(_this3.canvas.contextTop);
+        _this3.canvas.renderAll();
+        resolve(image);
+      });
     });
   }
 });
@@ -44114,6 +44274,16 @@ var mouseDownHandler = function mouseDownHandler(evt) {
   return this.placeSticker(this._canvas.getPointer(evt.e));
 };
 
+var mouseUpHandler = function mouseUpHandler() {
+  var config = this._config.stickerControls || {};
+  var noBorder = config.cornerSize === 0 || !config.hasBorders;
+  if (this.state._stickerAdded && this.state.sticker.active && noBorder) {
+    this._canvas.setCursor('move');
+  }
+
+  return this;
+};
+
 var disableSelectabilityHandler = function disableSelectabilityHandler(evt) {
   if (evt.target instanceof fabric.Image) {
     return;
@@ -44205,6 +44375,7 @@ var recordPropertyChange = function recordPropertyChange(historyManager, fabricE
 module.exports = {
   disableSelectabilityHandler: disableSelectabilityHandler,
   mouseDownHandler: mouseDownHandler,
+  mouseUpHandler: mouseUpHandler,
   recordObjectAddition: recordObjectAddition,
   recordPropertyChange: recordPropertyChange
 };
@@ -44512,6 +44683,7 @@ var Promise = window.Promise || require('bluebird');
 var _require = require('./event-handlers'),
     disableSelectabilityHandler = _require.disableSelectabilityHandler,
     mouseDownHandler = _require.mouseDownHandler,
+    mouseUpHandler = _require.mouseUpHandler,
     recordObjectAddition = _require.recordObjectAddition,
     recordPropertyChange = _require.recordPropertyChange;
 
@@ -44648,6 +44820,7 @@ var Stickerbook = function () {
       // more opinionated handlers, these can be deactivated by implementors
       if (this._config.useDefaultEventHandlers) {
         canvas.on('mouse:down', mouseDownHandler.bind(this));
+        canvas.on('mouse:up', mouseUpHandler.bind(this));
       }
 
       // listen for objects to be added, so we can disable things from being selectable
