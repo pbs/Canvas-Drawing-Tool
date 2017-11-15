@@ -345,3 +345,8 @@ the page yourself (sorry, no live-reload at the time of writing).
 
 You can also run your own tests with `npm run test`. You can also see the test suite run by opening `test/index.html`
 in a browser after running `gulp build-test`.
+
+## Final notes
+As of 3.0.0, we're no longer binding a Promise polyfill to this library to help cut down on library size. If you need
+to run in [a browser that doesn't have native Promises](https://caniuse.com/#feat=promises), you'll need to polyfill
+it yourself.
