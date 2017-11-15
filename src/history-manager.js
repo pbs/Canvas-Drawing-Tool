@@ -1,5 +1,3 @@
-const Promise = window.Promise || require('bluebird');
-
 /**
  * Helper class for managing a state stack of changes made to the canvas. Stores deltas to save
  * space
