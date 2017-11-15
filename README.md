@@ -3,16 +3,19 @@
 
 ## Basic Usage
 To create a stickerbook, you'll first need to include the script on the page:
+
 ```html
 <script src="node_modules/pbs-kids-canvas-drawing/dist/stickerbook.dist.js"></script>
 ```
 
 If you'd like, there's also an unminified debug build available too if you need to debug anything:
+
 ```html
 <script src="node_modules/pbs-kids-canvas-drawing/dist/stickerbook.combined.js"></script>
 ```
 
 Now, create a containing element for the stickerbook and instantiate
+
 ```javascript
 var container = document.getElementById('stickerbook-container');
 document.body.appendChild(container);
@@ -21,11 +24,22 @@ var stickerBook = new Stickerbook({
   // The containing element for the stickerbook
   container : container,
 
-  // the available stickers that can be used
-  stickers: [
-    'path/to/first/image.png',
-    'path/to/other/image.png'
-  ],
+  // sticker configuration
+  stickers: {
+    // the available stickers that can be used
+    enabled: [
+      'path/to/first/image.png',
+      'path/to/other/image.png'
+    ],
+
+    // styling options for sticker sizing controls (optional)
+    controls: {
+      cornerColor: 'rgba(0,0,0,0.5)',
+      cornerSize: 20,
+      hasBorders: true
+    }
+  },
+
 
   background: {
     // the backgrounds that can be set
@@ -72,13 +86,6 @@ var stickerBook = new Stickerbook({
 
   // Whether or not to enable touch events
   mobileEnabled: true,
-
-  // styling options for sticker sizing controls (optional)
-  stickerControls: {
-    cornerColor: 'rgba(0,0,0,0.5)',
-    cornerSize: 20,
-    hasBorders: true
-  },
 
   // Whether or not to use default event handlers (see "Events" below)
   useDefaultEventHandlers: true
