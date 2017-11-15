@@ -9,10 +9,16 @@ const images = {
 const createValidConfig = () => {
   return {
     container: document.createElement('div'),
-    stickers: [
-      images.star,
-      images.dot
-    ],
+    stickers: {
+      enabled: [
+        images.star,
+        images.dot
+      ],
+      controls: {
+        cornerColor: 'rgba(0, 0, 0, 0.5)',
+        cornerSize: 20
+      }
+    },
     brush: {
       widths: [1, 10],
       enabled: ['eraser', 'bitmap', 'fill', 'marker', 'pencil', 'spray'],
@@ -21,10 +27,6 @@ const createValidConfig = () => {
     background: {
       enabled: [images.dot],
       default: null
-    },
-    stickerControls: {
-      cornerColor: 'rgba(0, 0, 0, 0.5)',
-      cornerSize: 20
     },
     useDefaultEventHandlers: true,
     mobileEnabled: true
