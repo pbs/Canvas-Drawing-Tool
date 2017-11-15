@@ -15,7 +15,6 @@ const BackgroundManager = require('./background-manager');
 const MarkerBrush = require('./brushes/marker-brush');
 const PatternBrush = require('./brushes/pattern-brush');
 const PencilEraserBrush = require('./brushes/pencil-eraser-brush');
-const Promise = window.Promise || require('bluebird');
 const {
   disableSelectabilityHandler,
   mouseDownHandler,

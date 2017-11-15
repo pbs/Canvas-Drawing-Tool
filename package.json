@@ -16,7 +16,6 @@
   "license": "MIT",
   "dependencies": {
     "ajv": "^4.7.7",
-    "bluebird": "^3.4.1",
     "fuzzy-select": "pbs/fuzzy-select.git#1.2.0"
   },
   "devDependencies": {
