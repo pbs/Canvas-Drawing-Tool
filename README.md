@@ -37,6 +37,15 @@ var stickerBook = new Stickerbook({
       cornerColor: 'rgba(0,0,0,0.5)',
       cornerSize: 20,
       hasBorders: true
+    },
+
+    // default positioning for stickers (provide whatever you need, the rest defaults to reasonable values)
+    defaults: {
+      x: 0, // if x and y defaults are not provided, you *must* provide them when calling placeSticker()
+      y: 0,
+      xScale: 1,
+      yScale: 1,
+      rotation: 0 // degrees
     }
   },
 
