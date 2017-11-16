@@ -15,7 +15,6 @@ const BackgroundManager = require('./background-manager');
 const MarkerBrush = require('./brushes/marker-brush');
 const PatternBrush = require('./brushes/pattern-brush');
 const PencilEraserBrush = require('./brushes/pencil-eraser-brush');
-const Promise = window.Promise || require('bluebird');
 const {
   disableSelectabilityHandler,
   mouseDownHandler,
@@ -29,10 +28,7 @@ const HistoryManager = require('./history-manager');
 class Stickerbook {
   /**
    * Construct new stickerbook
-   * @param {Object} config - configuration options
-   * @param {Object[]} config.stickers - urls to sticker PNG images
-   * @param {string} config.container - DOM div element to manipulate
-   *
+   * @param {Object} config - configuration options (see docs)
    * @returns {Object} Stickerbook
    */
   constructor(config) {
@@ -343,7 +339,7 @@ class Stickerbook {
    *                                 loaded and is ready
    */
   setSticker(stickerUrl) {
-    if (this._config.stickers.indexOf(stickerUrl) === -1) {
+    if (this._config.stickers.enabled.indexOf(stickerUrl) === -1) {
       throw new Error(stickerUrl + ' is not a permitted sticker');
     }
 
@@ -387,7 +383,7 @@ class Stickerbook {
    * @returns {Object[]} array of sticker image urls
    */
   getAvailableStickers() {
-    return this._config.stickers;
+    return this._config.stickers.enabled;
   }
 
   /**
@@ -527,12 +523,21 @@ class Stickerbook {
    * @returns {Promise} A promise that resolves to the stickerbook once the image is placed
    */
   placeSticker(options) {
+    var defaults = this._config.stickers.defaults;
+    if(this._config.stickers.defaults) {
+      options.x = options.x || defaults.x;
+      options.y = options.y || defaults.y;
+      options.xScale = options.xScale || defaults.xScale;
+      options.yScale = options.yScale || defaults.yScale;
+      options.rotation = options.rotation || defaults.rotation;
+    }
+
     options.xScale = options.xScale || 1;
     options.yScale = options.yScale || 1;
     options.rotation = options.rotation || 0;
 
     if(options.x === undefined || options.y === undefined) {
-      throw new Error('To place a sticker an x and y must be provided');
+      throw new Error('To place a sticker an x and y must be provided if there is no default');
     }
 
     // add the sticker to the internal fabric canvas and reposition
@@ -548,15 +553,15 @@ class Stickerbook {
     this._canvas.add(this.state.sticker);
 
     // if there are any sticker control configs, apply those styles
-    if (this._config.stickerControls) {
-      var hasBorders = this._config.stickerControls.hasBorders;
+    if (this._config.stickers.controls) {
+      var hasBorders = this._config.stickers.controls.hasBorders;
       if(hasBorders === undefined) {
         hasBorders = true;
       }
       this.state.sticker.set({
         transparentCorners: false,
-        cornerSize: this._config.stickerControls.cornerSize,
-        cornerColor: this._config.stickerControls.cornerColor,
+        cornerSize: this._config.stickers.controls.cornerSize,
+        cornerColor: this._config.stickers.controls.cornerColor,
         hasBorders: hasBorders
       });
     }

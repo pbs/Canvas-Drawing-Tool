@@ -13,11 +13,21 @@ var host = location.toString();
 // initialize stickerbook.
 var stickerbook = new Stickerbook({
   container: document.getElementById('stickerbook_container'),
-  stickers: [
-    host + 'images/coin.svg',
-    host + 'images/playCircle.svg',
-    host + 'images/star.svg'
-  ],
+  stickers: {
+    enabled: [
+      host + 'images/coin.svg',
+      host + 'images/playCircle.svg',
+      host + 'images/star.svg'
+    ],
+    controls: {
+      cornerColor: 'rgba(0,0,0,0.5)',
+      cornerSize: 20
+    },
+    defaultScale: {
+      x: 0.5,
+      y: 0.75
+    }
+  },
   background: {
     enabled: [ host + 'images/background.png' ],
     default: host + 'images/background.png'
@@ -35,10 +45,6 @@ var stickerbook = new Stickerbook({
       'spray'
     ],
     colors: ['#00c3f7', '#f41971', '#ffe000']
-  },
-  stickerControls: {
-    cornerColor: 'rgba(0,0,0,0.5)',
-    cornerSize: 20
   },
   mobileEnabled: true,
   useDefaultEventHandlers: true

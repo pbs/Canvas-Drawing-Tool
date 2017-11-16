@@ -200,7 +200,7 @@ describe('Stickerbook', () => {
           errorMessage = e.message;
         }
 
-        if(errorMessage == 'To place a sticker an x and y must be provided') {
+        if(errorMessage == 'To place a sticker an x and y must be provided if there is no default') {
           return done();
         }
 
