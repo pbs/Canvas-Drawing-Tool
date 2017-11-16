@@ -37089,7 +37089,7 @@ module.exports = {
 },{}],59:[function(require,module,exports){
 module.exports={
   "name": "pbs-kids-canvas-drawing",
-  "version": "2.4.0",
+  "version": "3.0.0",
   "description": "PBS Kids canvas manipulation library",
   "main": "index.js",
   "repository": "https://github.com/pbs/Canvas-Drawing-Tool",
@@ -39031,7 +39031,7 @@ var Stickerbook = function () {
       options.rotation = options.rotation || 0;
 
       if (options.x === undefined || options.y === undefined) {
-        throw new Error('To place a sticker an x and y must be provided');
+        throw new Error('To place a sticker an x and y must be provided if there is no default');
       }
 
       // add the sticker to the internal fabric canvas and reposition
