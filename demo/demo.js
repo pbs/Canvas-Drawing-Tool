@@ -22,6 +22,10 @@ var stickerbook = new Stickerbook({
     controls: {
       cornerColor: 'rgba(0,0,0,0.5)',
       cornerSize: 20
+    },
+    defaultScale: {
+      x: 0.5,
+      y: 0.75
     }
   },
   background: {

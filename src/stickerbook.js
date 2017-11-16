@@ -523,12 +523,21 @@ class Stickerbook {
    * @returns {Promise} A promise that resolves to the stickerbook once the image is placed
    */
   placeSticker(options) {
+    var defaults = this._config.stickers.defaults;
+    if(this._config.stickers.defaults) {
+      options.x = options.x || defaults.x;
+      options.y = options.y || defaults.y;
+      options.xScale = options.xScale || defaults.xScale;
+      options.yScale = options.yScale || defaults.yScale;
+      options.rotation = options.rotation || defaults.rotation;
+    }
+
     options.xScale = options.xScale || 1;
     options.yScale = options.yScale || 1;
     options.rotation = options.rotation || 0;
 
     if(options.x === undefined || options.y === undefined) {
-      throw new Error('To place a sticker an x and y must be provided');
+      throw new Error('To place a sticker an x and y must be provided if there is no default');
     }
 
     // add the sticker to the internal fabric canvas and reposition

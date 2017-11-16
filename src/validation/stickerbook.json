@@ -33,6 +33,26 @@
               "type": "integer"
             }
           }
+        },
+        "defaults" : {
+          "type" : "object",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "xScale": {
+              "type": "number"
+            },
+            "yScale": {
+              "type": "number"
+            },
+            "rotation": {
+              "type": "number"
+            }
+          }
         }
       }
     },
