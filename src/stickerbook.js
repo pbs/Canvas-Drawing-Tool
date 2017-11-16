@@ -523,15 +523,17 @@ class Stickerbook {
    * @returns {Promise} A promise that resolves to the stickerbook once the image is placed
    */
   placeSticker(options) {
-    var defaultXScale = 1;
-    var defaultYScale = 1;
-    if(this._config.stickers.defaultScale) {
-      defaultXScale = this._config.stickers.defaultScale.x || 1;
-      defaultYScale = this._config.stickers.defaultScale.y || 1;
+    var defaults = this._config.stickers.defaults;
+    if(this._config.stickers.defaults) {
+      options.x = options.x || defaults.x;
+      options.y = options.y || defaults.y;
+      options.xScale = options.xScale || defaults.xScale;
+      options.yScale = options.yScale || defaults.yScale;
+      options.rotation = options.rotation || defaults.rotation;
     }
 
-    options.xScale = options.xScale || defaultXScale;
-    options.yScale = options.yScale || defaultYScale;
+    options.xScale = options.xScale || 1;
+    options.yScale = options.yScale || 1;
     options.rotation = options.rotation || 0;
 
     if(options.x === undefined || options.y === undefined) {

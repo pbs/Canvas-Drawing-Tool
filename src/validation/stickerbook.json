@@ -34,17 +34,22 @@
             }
           }
         },
-        "defaultScale" : {
+        "defaults" : {
           "type" : "object",
-          "required": [
-            "x",
-            "y"
-          ],
           "properties": {
             "x": {
               "type": "number"
             },
             "y": {
+              "type": "number"
+            },
+            "xScale": {
+              "type": "number"
+            },
+            "yScale": {
+              "type": "number"
+            },
+            "rotation": {
               "type": "number"
             }
           }

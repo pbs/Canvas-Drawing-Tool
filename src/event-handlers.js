@@ -12,13 +12,7 @@ const mouseDownHandler = function (evt) {
     return this;
   }
 
-  var pointer = this._canvas.getPointer(evt.e);
-  if(this._config.stickers.defaultScale) {
-    pointer.xScale = this._config.stickers.defaultScale.x || 1;
-    pointer.yScale = this._config.stickers.defaultScale.y || 1;
-  }
-
-  return this.placeSticker(pointer);
+  return this.placeSticker(this._canvas.getPointer(evt.e));
 };
 
 const mouseUpHandler = function () {
