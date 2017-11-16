@@ -537,7 +537,7 @@ class Stickerbook {
     options.rotation = options.rotation || 0;
 
     if(options.x === undefined || options.y === undefined) {
-      throw new Error('To place a sticker an x and y must be provided');
+      throw new Error('To place a sticker an x and y must be provided if there is no default');
     }
 
     // add the sticker to the internal fabric canvas and reposition
