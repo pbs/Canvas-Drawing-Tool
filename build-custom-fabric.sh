@@ -16,6 +16,9 @@ fi
 # change working directory
 cd fabric
 
+# see if we've already build
+head -n 1 dist/fabric.js  | egrep "exclude=.*,?gestures" > /dev/null || exit 0
+
 # checkout a specific commit
 echo "Switching to commit=$commit"
 git checkout .
