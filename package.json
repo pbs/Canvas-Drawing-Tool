@@ -1,11 +1,10 @@
 {
   "name": "pbs-kids-canvas-drawing",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "PBS Kids canvas manipulation library",
   "main": "index.js",
   "repository": "https://github.com/pbs/Canvas-Drawing-Tool",
   "scripts": {
-    "install": "bash build-custom-fabric.sh",
     "lint": "eslint ./src && eslint ./demo/demo.js",
     "testsuite": "gulp concat-test && phantomjs test/run-tests.js",
     "test": "npm run lint && npm run testsuite",

@@ -2,6 +2,7 @@
 
 const bundle = require('./gulp/bundle');
 const concat = require('gulp-concat');
+const exec = require('child_process').exec;
 const express = require('express');
 const gulp = require('gulp');
 
@@ -12,10 +13,19 @@ const path = {
   ENTRY_POINT: './index.js'
 };
 
+// Fabric compilation
+gulp.task('build-fabric', cb => {
+  exec('bash ./build-custom-fabric.sh', (err, stdout, stderr) => {
+    console.log(stdout);
+    console.error(stderr);
+    cb(err);
+  });
+});
+
 // Bundle tasks
-gulp.task('bundle-debug', () => bundle(path.ENTRY_POINT, 'stickerbook.combined.js', [path.TMP], true));
-gulp.task('bundle-release', () => bundle(path.ENTRY_POINT, 'stickerbook.dist.js', [path.TMP], false));
-gulp.task('bundle-test', () => bundle('test/stickerbook.test.js', 'stickerbook.test.bundle.js', [path.TMP], true));
+gulp.task('bundle-debug', ['build-fabric'], () => bundle(path.ENTRY_POINT, 'stickerbook.combined.js', [path.TMP], true));
+gulp.task('bundle-release', ['build-fabric'], () => bundle(path.ENTRY_POINT, 'stickerbook.dist.js', [path.TMP], false));
+gulp.task('bundle-test', ['build-fabric'], () => bundle('test/stickerbook.test.js', 'stickerbook.test.bundle.js', [path.TMP], true));
 
 // concat tasks
 gulp.task('concat-release', ['bundle-release'], () => {
