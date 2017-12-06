@@ -12,7 +12,7 @@ const PencilEraserBrush = fabric.util.createClass(fabric.PencilBrush, {
    * @param {Object} pointer The mouse pointer
    * @return {void}
    */
-  onMouseDown: function(pointer) {
+  onMouseDown: function (pointer) {
     this._setBrushStyles();
 
     this.callSuper('onMouseDown', pointer);

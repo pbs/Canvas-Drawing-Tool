@@ -40,7 +40,8 @@ const BitmapEraserBrush = fabric.util.createClass(BitmapBrush, {
 
     this.canvas.contextTop.clearRect(0, 0, this.maskCanvas.width, this.maskCanvas.height);
     this.canvas.contextTop.globalCompositeOperation = 'source-over';
-    this.canvas.contextTop.drawImage(util.precompositeBackground(this.canvas.wrapperEl.previousElementSibling), 0, 0);
+    this.canvas.contextTop.drawImage(
+      util.precompositeBackground(this.canvas.wrapperEl.previousElementSibling), 0, 0);
     this.canvas.contextTop.globalCompositeOperation = 'destination-in';
     this.canvas.contextTop.drawImage(this.maskCanvas, 0, 0);
     this.canvas.contextTop.globalCompositeOperation = 'source-over';
