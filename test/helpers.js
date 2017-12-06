@@ -7,8 +7,12 @@ const images = {
 };
 
 const createValidConfig = () => {
+  var div = document.createElement('div');
+  div.id = 'test-container';
+  document.body.appendChild(div);
+
   return {
-    container: document.createElement('div'),
+    container: div,
     stickers: {
       enabled: [
         images.star,
