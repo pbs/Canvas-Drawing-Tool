@@ -28,11 +28,11 @@ const rgbaToArray = rgba => rgba.replace('rgba(', '').replace(')', '').split(','
 
 /**
  * Repacks an array split color back into the CSS format rgba(R, G, B, A)
- * @param {Array<Number} array The length-4 array to rejoin
+ * @param {Array<Number>} array The length-4 array to rejoin
  * @return {String} An rgba string
  */
 const arrayToRgba = array => {
-  return 'rgba(' + array[0].toFixed(0) + ', ' + array[1].toFixed(0) + ', '+ array[2].toFixed(0)
+  return 'rgba(' + array[0].toFixed(0) + ', ' + array[1].toFixed(0) + ', ' + array[2].toFixed(0)
     + ', ' + array[3].toFixed(3) + ')';
 };
 
