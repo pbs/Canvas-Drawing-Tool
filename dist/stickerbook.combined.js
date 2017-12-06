@@ -28747,7 +28747,7 @@ Stickerbook.VERSION = require('./package.json').version;
 // attach to global object
 window.Stickerbook = Stickerbook;
 
-},{"./package.json":59,"./src/stickerbook.js":72}],2:[function(require,module,exports){
+},{"./package.json":59,"./src/stickerbook.js":71}],2:[function(require,module,exports){
 'use strict';
 
 var compileSchema = require('./compile')
@@ -37312,7 +37312,7 @@ var BackgroundManager = function () {
 
 module.exports = BackgroundManager;
 
-},{"./util":73}],61:[function(require,module,exports){
+},{"./util":72}],61:[function(require,module,exports){
 'use strict';
 
 var BitmapBrush = fabric.util.createClass(fabric.BaseBrush, {
@@ -37401,9 +37401,22 @@ module.exports = BitmapBrush;
 'use strict';
 
 var BitmapBrush = require('./bitmap-brush');
-var MaskedBrushRenderer = require('../masked-brush-renderer');
+var util = require('../util');
 
-var BitmapEraserBrush = fabric.util.createClass(BitmapBrush, MaskedBrushRenderer, {
+var BitmapEraserBrush = fabric.util.createClass(BitmapBrush, {
+  initialize: function initialize(canvas, options) {
+    this.callSuper('initialize', canvas, options);
+
+    this.maskCanvas = this._makeCanvas();
+  },
+
+  _makeCanvas: function _makeCanvas() {
+    var canvas = document.createElement('canvas');
+    canvas.width = this.canvas.contextTop.canvas.width;
+    canvas.height = this.canvas.contextTop.canvas.height;
+    return canvas;
+  },
+
   /**
    * Override the color grabbing logic to always give white. This will make it appear like it's
    * erasing over white backgrounds. However, this doesn't handle background images well. But that's
@@ -37414,13 +37427,34 @@ var BitmapEraserBrush = fabric.util.createClass(BitmapBrush, MaskedBrushRenderer
     return [255, 255, 255];
   },
 
+  stampImage: function stampImage(pointer) {
+    if (!this.bitmap) {
+      return;
+    }
+
+    var drawWidth = this.width * 2;
+    var drawHeight = this.width / this.aspectRatio * 2;
+    var x = pointer.x - drawWidth / 2;
+    var y = pointer.y - drawHeight / 2;
+
+    // stamp the bitmap on the mask
+    this.maskCanvas.getContext('2d').drawImage(this.bitmap, x, y, drawWidth, drawHeight);
+
+    this.canvas.contextTop.clearRect(0, 0, this.maskCanvas.width, this.maskCanvas.height);
+    this.canvas.contextTop.globalCompositeOperation = 'source-over';
+    this.canvas.contextTop.drawImage(util.precompositeBackground(this.canvas.wrapperEl.previousElementSibling), 0, 0);
+    this.canvas.contextTop.globalCompositeOperation = 'destination-in';
+    this.canvas.contextTop.drawImage(this.maskCanvas, 0, 0);
+    this.canvas.contextTop.globalCompositeOperation = 'source-over';
+  },
+
   /**
    * Override on mouse up for the bitmap brush to do the exact same thing, but composite differently
    * so that it actually erases from the lower canvas
    * @return {void}
    */
   onMouseUp: function onMouseUp() {
-    var dataUrl = this.canvas.contextTop.canvas.toDataURL();
+    var dataUrl = this.maskCanvas.toDataURL();
     fabric.Image.fromURL(dataUrl, function (image) {
       image.set({ selectable: false });
       image.globalCompositeOperation = 'destination-out';
@@ -37433,7 +37467,7 @@ var BitmapEraserBrush = fabric.util.createClass(BitmapBrush, MaskedBrushRenderer
 
 module.exports = BitmapEraserBrush;
 
-},{"../masked-brush-renderer":69,"./bitmap-brush":61}],63:[function(require,module,exports){
+},{"../util":72,"./bitmap-brush":61}],63:[function(require,module,exports){
 'use strict';
 
 var _require = require('fuzzy-select'),
@@ -37960,13 +37994,40 @@ module.exports = PatternBrush;
 },{}],66:[function(require,module,exports){
 'use strict';
 
-var MaskedBrushRenderer = require('../masked-brush-renderer');
 var MaskedPath = require('../masked-path');
+var util = require('../util');
 
 /**
  * A pencil brush that erases from the canvas
  */
-var PencilEraserBrush = fabric.util.createClass(fabric.PencilBrush, MaskedBrushRenderer, {
+var PencilEraserBrush = fabric.util.createClass(fabric.PencilBrush, {
+  /**
+   * Overriding the base onMouseDown to fix a weird bug I was seeing: The first path didn't render
+   * properly because `this.color` was not being set correctly on the first path. Here, I'm just
+   * forcing it to be set properly.
+   * @param {Object} pointer The mouse pointer
+   * @return {void}
+   */
+  onMouseDown: function onMouseDown(pointer) {
+    this._setBrushStyles();
+
+    this.callSuper('onMouseDown', pointer);
+  },
+
+  /**
+   * Override of the the base _setBrushStyles to override the brush color to a pattern that
+   * overlays the background OVER the current canvas to appear as if it is erasing
+   * @return {void}
+   */
+  _setBrushStyles: function _setBrushStyles() {
+    this.callSuper('_setBrushStyles');
+
+    // pre-calculate the background pattern
+    var background = this.canvas.wrapperEl.previousElementSibling;
+    var precomposited = util.precompositeBackground(background);
+    this.color = this.canvas.contextTop.createPattern(precomposited, 'no-repeat');
+  },
+
   /**
    * An override of the pencil brush's `createPath` method, to that it uses our
    * custom `MaskedPath`, rather than the default `fabric.Path`. This allows us
@@ -37983,7 +38044,7 @@ var PencilEraserBrush = fabric.util.createClass(fabric.PencilBrush, MaskedBrushR
       originX: 'center',
       originY: 'center',
       selectable: false,
-      stroke: this.color,
+      stroke: 'black',
       strokeDashArray: this.strokeDashArray,
       strokeLineCap: this.strokeLineCap,
       strokeLineJoin: this.strokeLineJoin,
@@ -37994,7 +38055,7 @@ var PencilEraserBrush = fabric.util.createClass(fabric.PencilBrush, MaskedBrushR
 
 module.exports = PencilEraserBrush;
 
-},{"../masked-brush-renderer":69,"../masked-path":70}],67:[function(require,module,exports){
+},{"../masked-path":69,"../util":72}],67:[function(require,module,exports){
 'use strict';
 
 var mouseDownHandler = function mouseDownHandler(evt) {
@@ -38336,22 +38397,6 @@ module.exports = HistoryManager;
 },{}],69:[function(require,module,exports){
 'use strict';
 
-/**
- * A mixin for making brushes erase from the canvas during their "live update" (onMouseMove)
- */
-var MaskedBrushRenderer = {
-  _render: function _render() {
-    var ctx = this.canvas.contextTop;
-    ctx.strokeStyle = 'white';
-    this.callSuper('_render');
-  }
-};
-
-module.exports = MaskedBrushRenderer;
-
-},{}],70:[function(require,module,exports){
-'use strict';
-
 var MaskedShapeRenderer = require('./masked-shape-renderer');
 
 /**
@@ -38361,7 +38406,7 @@ var MaskedShapeRenderer = require('./masked-shape-renderer');
 var MaskedPath = fabric.util.createClass(fabric.Path, MaskedShapeRenderer);
 module.exports = MaskedPath;
 
-},{"./masked-shape-renderer":71}],71:[function(require,module,exports){
+},{"./masked-shape-renderer":70}],70:[function(require,module,exports){
 'use strict';
 
 /**
@@ -38384,7 +38429,7 @@ module.exports = {
   }
 };
 
-},{}],72:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 'use strict';
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -39108,7 +39153,7 @@ var Stickerbook = function () {
 
 module.exports = Stickerbook;
 
-},{"./background-manager":60,"./brushes/bitmap-brush":61,"./brushes/bitmap-eraser-brush":62,"./brushes/fill-brush":63,"./brushes/marker-brush":64,"./brushes/pattern-brush":65,"./brushes/pencil-eraser-brush":66,"./event-handlers":67,"./history-manager":68,"./util":73,"./validation/bitmap-brush.json":74,"./validation/pattern-brush.json":75,"./validation/stickerbook.json":76,"./validation/validate":77}],73:[function(require,module,exports){
+},{"./background-manager":60,"./brushes/bitmap-brush":61,"./brushes/bitmap-eraser-brush":62,"./brushes/fill-brush":63,"./brushes/marker-brush":64,"./brushes/pattern-brush":65,"./brushes/pencil-eraser-brush":66,"./event-handlers":67,"./history-manager":68,"./util":72,"./validation/bitmap-brush.json":73,"./validation/pattern-brush.json":74,"./validation/stickerbook.json":75,"./validation/validate":76}],72:[function(require,module,exports){
 'use strict';
 
 /**
@@ -39132,11 +39177,85 @@ var calculateInnerDimensions = function calculateInnerDimensions(element) {
   };
 };
 
-module.exports = {
-  calculateInnerDimensions: calculateInnerDimensions
+/**
+ * Splits an rgba CSS style rule into its consituent components
+ * @param {String} rgba The rgba String, e.g. "rgba(1, 2, 3, 0.1)"
+ * @return {Array<Number>} A length-4 array of numbers representing the individual components
+ */
+var rgbaToArray = function rgbaToArray(rgba) {
+  return rgba.replace('rgba(', '').replace(')', '').split(',').map(Number);
 };
 
-},{}],74:[function(require,module,exports){
+/**
+ * Repacks an array split color back into the CSS format rgba(R, G, B, A)
+ * @param {Array<Number>} array The length-4 array to rejoin
+ * @return {String} An rgba string
+ */
+var arrayToRgba = function arrayToRgba(array) {
+  return 'rgba(' + array[0].toFixed(0) + ', ' + array[1].toFixed(0) + ', ' + array[2].toFixed(0) + ', ' + array[3].toFixed(3) + ')';
+};
+
+/**
+ * Uses the [over operator](https://en.wikipedia.org/wiki/Alpha_compositing#Description) to
+ * composite two colors together
+ * @param {Array<Number>} color1 The bottom color
+ * @param {Array<Number>} color2 The top color
+ * @return {Array<Number>} The composited color
+ */
+var compositeColors = function compositeColors(color1, color2) {
+  var alpha1 = color1[3];
+  var alpha2 = color2[3];
+  var blendedAlpha = alpha2 + alpha1 * (1 - alpha2);
+  var composited = [0, 0, 0, blendedAlpha];
+
+  // rgb components
+  for (var i = 0; i < 3; i++) {
+    composited[i] = (color2[i] * alpha2 + color1[i] * alpha1 * (1 - alpha2)) / blendedAlpha;
+  }
+
+  return composited;
+};
+
+/**
+ * Gets a version of the background as a new canvas element with the background color baked in.
+ * If a background image were to have any alpha pixels the background will show through, yet
+ * context.getImageData will not reflect the partially visible background that the user sees.
+ * This is a workaround for this behavior, to allow integrators to correctly sample the
+ * background visible to the user. Most importantly, this allows us to render eraser preview
+ * paths correctly. However, this isn't terribly robust as the container background could have
+ * alpha. However, I'm going to mention this in the README and live with it
+ *
+ * @param {HTMLCanvasElement} canvas A canvas to precomposite with it's background, parent element
+ * @returns {HTMLCanvasElement} A precomposited element
+ */
+var precompositeBackground = function precompositeBackground(canvas) {
+  var dummyCanvas = document.createElement('canvas');
+  dummyCanvas.width = canvas.width;
+  dummyCanvas.height = canvas.height;
+  var dummyContext = dummyCanvas.getContext('2d');
+
+  // calculate the composited background color, by precompositing the background here with white
+  var rawBackgroundColor = document.defaultView.getComputedStyle(canvas.parentElement).backgroundColor;
+  var precompositedArray = compositeColors([255, 255, 255, 1], rgbaToArray(rawBackgroundColor));
+
+  dummyContext.fillStyle = arrayToRgba(precompositedArray);
+  dummyContext.fillRect(0, 0, dummyCanvas.width, dummyCanvas.height);
+
+  // now fill the background image
+  dummyContext.drawImage(canvas, 0, 0);
+
+  return dummyCanvas;
+};
+
+module.exports = {
+  calculateInnerDimensions: calculateInnerDimensions,
+  rgbaToArray: rgbaToArray,
+  arrayToRgba: arrayToRgba,
+  compositeColors: compositeColors,
+  precompositeBackground: precompositeBackground
+};
+
+},{}],73:[function(require,module,exports){
 module.exports={
   "description" : "Bitmap brush configuration schema",
   "type" : "object",
@@ -39150,7 +39269,7 @@ module.exports={
   }
 }
 
-},{}],75:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 module.exports={
   "description" : "Pattern brush configuration schema",
   "type" : "object",
@@ -39167,7 +39286,7 @@ module.exports={
   }
 }
 
-},{}],76:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 module.exports={
   "description": "Stickerbook configuration schema",
   "type": "object",
@@ -39286,7 +39405,7 @@ module.exports={
   }
 }
 
-},{}],77:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 'use strict';
 
 var Ajv = require('ajv');
