@@ -1,7 +1,6 @@
 const BitmapBrush = require('./bitmap-brush');
-const MaskedBrushRenderer = require('../masked-brush-renderer');
 
-const BitmapEraserBrush = fabric.util.createClass(BitmapBrush, MaskedBrushRenderer, {
+const BitmapEraserBrush = fabric.util.createClass(BitmapBrush, {
   /**
    * Override the color grabbing logic to always give white. This will make it appear like it's
    * erasing over white backgrounds. However, this doesn't handle background images well. But that's
