@@ -1,21 +1,35 @@
 const MaskedPath = require('../masked-path');
+const util = require('../util');
 
 /**
  * A pencil brush that erases from the canvas
  */
 const PencilEraserBrush = fabric.util.createClass(fabric.PencilBrush, {
   /**
-   * Override the _render method to composite differently than the default pencil brush to allow
-   * eraser previews
+   * Overriding the base onMouseDown to fix a weird bug I was seeing: The first path didn't render
+   * properly because `this.color` was not being set correctly on the first path. Here, I'm just
+   * forcing it to be set properly.
+   * @param {Object} pointer The mouse pointer
    * @return {void}
    */
-  _render: function () {
+  onMouseDown: function(pointer) {
+    this._setBrushStyles();
+
+    this.callSuper('onMouseDown', pointer);
+  },
+
+  /**
+   * Override of the the base _setBrushStyles to override the brush color to a pattern that
+   * overlays the background OVER the current canvas to appear as if it is erasing
+   * @return {void}
+   */
+  _setBrushStyles: function () {
+    this.callSuper('_setBrushStyles');
+
+    // pre-calculate the background pattern
     var background = this.canvas.wrapperEl.previousElementSibling;
-    var backgroundPattern = this.canvas.contextTop.createPattern(background, 'no-repeat');
-
-    this.canvas.contextTop.strokeStyle = backgroundPattern;
-
-    this.callSuper('_render');
+    var precomposited = util.precompositeBackground(background);
+    this.color = this.canvas.contextTop.createPattern(precomposited, 'no-repeat');
   },
 
   /**
@@ -34,7 +48,7 @@ const PencilEraserBrush = fabric.util.createClass(fabric.PencilBrush, {
       originX: 'center',
       originY: 'center',
       selectable: false,
-      stroke: this.color,
+      stroke: 'black',
       strokeDashArray: this.strokeDashArray,
       strokeLineCap: this.strokeLineCap,
       strokeLineJoin: this.strokeLineJoin,

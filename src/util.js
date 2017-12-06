@@ -57,9 +57,42 @@ const compositeColors = (color1, color2) => {
   return composited;
 };
 
+/**
+ * Gets a version of the background as a new canvas element with the background color baked in.
+ * If a background image were to have any alpha pixels the background will show through, yet
+ * context.getImageData will not reflect the partially visible background that the user sees.
+ * This is a workaround for this behavior, to allow integrators to correctly sample the
+ * background visible to the user. Most importantly, this allows us to render eraser preview
+ * paths correctly. However, this isn't terribly robust as the container background could have
+ * alpha. However, I'm going to mention this in the README and live with it
+ *
+ * @param {HTMLCanvasElement} canvas A canvas to precomposite with it's background, parent element
+ * @returns {HTMLCanvasElement} A precomposited element
+ */
+const precompositeBackground = canvas => {
+  var dummyCanvas = document.createElement('canvas');
+  dummyCanvas.width = canvas.width;
+  dummyCanvas.height = canvas.height;
+  var dummyContext = dummyCanvas.getContext('2d');
+
+  // calculate the composited background color, by precompositing the background here with white
+  let rawBackgroundColor = document.defaultView
+    .getComputedStyle(canvas.parentElement).backgroundColor;
+  let precompositedArray = compositeColors([255, 255, 255, 1], rgbaToArray(rawBackgroundColor));
+
+  dummyContext.fillStyle = arrayToRgba(precompositedArray);
+  dummyContext.fillRect(0, 0, dummyCanvas.width, dummyCanvas.height);
+
+  // now fill the background image
+  dummyContext.drawImage(canvas, 0, 0);
+
+  return dummyCanvas;
+};
+
 module.exports = {
   calculateInnerDimensions: calculateInnerDimensions,
   rgbaToArray: rgbaToArray,
   arrayToRgba: arrayToRgba,
-  compositeColors: compositeColors
+  compositeColors: compositeColors,
+  precompositeBackground: precompositeBackground
 };
