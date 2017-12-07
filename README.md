@@ -363,6 +363,11 @@ You can also run your own tests with `npm run test`. You can also see the test s
 in a browser after running `gulp build-test`.
 
 ## Final notes
-As of 3.0.0, we're no longer binding a Promise polyfill to this library to help cut down on library size. If you need
-to run in [a browser that doesn't have native Promises](https://caniuse.com/#feat=promises), you'll need to polyfill
-it yourself.
+- As of 3.0.0, we're no longer binding a Promise polyfill to this library to help cut down on library size. If you need
+  to run in [a browser that doesn't have native Promises](https://caniuse.com/#feat=promises), you'll need to polyfill
+  it yourself.
+- Background images and erasers are a little tricky to handle. When rendering the eraser as you move your mouse/finger
+  we are only able to render your configured background image composited with the background color of your stickerbook
+  container. Otherwise, _we will assume white_. If your background image has alpha in it, make sure you set a reasonable
+  _non-transparent_ background for your container, otherwise we can't guarantee eraser paths will properly reflect what
+  the user expects to see.
