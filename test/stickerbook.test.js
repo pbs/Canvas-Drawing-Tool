@@ -233,4 +233,5 @@ describe('Stickerbook', () => {
 
   require('./history.test.js');
   require('./event-handlers.test.js');
+  require('./util.test.js');
 });
