@@ -37089,7 +37089,7 @@ module.exports = {
 },{}],59:[function(require,module,exports){
 module.exports={
   "name": "pbs-kids-canvas-drawing",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "PBS Kids canvas manipulation library",
   "main": "index.js",
   "repository": "https://github.com/pbs/Canvas-Drawing-Tool",
