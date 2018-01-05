@@ -2,7 +2,7 @@
 set -e
 
 repo="https://github.com/kangax/fabric.js.git"
-tag="v1.7.16"
+tag="v2.0.0-rc.4"
 
 # if fabric hasn't been cloned, clone it
 echo "Checking that fabric has been cloned"

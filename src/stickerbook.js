@@ -443,7 +443,7 @@ class Stickerbook {
    * @return {Object} stickerbook
    */
   deselectAll() {
-    this._canvas.deactivateAll().renderAll();
+    this._canvas.discardActiveObject().renderAll();
     return this;
   }
 
