@@ -345,8 +345,8 @@ class Stickerbook {
 
     return new Promise((resolve) => {
       fabric.Image.fromURL(stickerUrl, (img) => {
-      var filter = new fabric.Image.filters.Resize();
-      img.resizeFilters.push(filter);
+        var filter = new fabric.Image.filters.Resize();
+        img.resizeFilters.push(filter);
         this._setState({
           sticker: img,
           drawing: false,
