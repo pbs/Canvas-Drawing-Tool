@@ -571,6 +571,13 @@ class Stickerbook {
 
     // update state
     this._setState({ _stickerAdded: true });
+	
+	// Update scaling lock values
+	var self = this;
+    requestAnimationFrame(function() {
+      self.state.sticker.lockScalingX = false;
+      self.state.sticker.lockScalingY = false;
+    });
 
     // re-render
     return this.triggerRender();
