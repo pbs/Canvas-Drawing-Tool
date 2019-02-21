@@ -21,8 +21,8 @@ class HistoryManager {
    */
   pushNewFabricObject(fabricObject) {
     // if there is any history after this point in time, nuke it.
-    if(this.historyIndex > -1) {
-      this.history.splice(this.historyIndex + 1);
+    if(this.historyIndex < this.history.length - 1) {
+      this.history = this.history.slice(0, this.historyIndex + 1);
     }
 
     fabricObject.stickerbookObjectId = this.objectIdCounter;

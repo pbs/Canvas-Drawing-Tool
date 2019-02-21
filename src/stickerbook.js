@@ -345,6 +345,8 @@ class Stickerbook {
 
     return new Promise((resolve) => {
       fabric.Image.fromURL(stickerUrl, (img) => {
+        var filter = new fabric.Image.filters.Resize();
+        img.resizeFilters.push(filter);
         this._setState({
           sticker: img,
           drawing: false,
@@ -571,6 +573,13 @@ class Stickerbook {
 
     // update state
     this._setState({ _stickerAdded: true });
+	
+	// Update scaling lock values
+    var self = this;
+    requestAnimationFrame(function() {
+      self.state.sticker.lockScalingX = false;
+      self.state.sticker.lockScalingY = false;
+    });
 
     // re-render
     return this.triggerRender();
