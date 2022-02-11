@@ -14,7 +14,7 @@
   "author": "PBS Kids (www.pbskids.org)",
   "license": "MIT",
   "dependencies": {
-    "ajv": "^4.7.7",
+    "ajv": "^6.12.3",
     "fuzzy-select": "pbs/fuzzy-select.git#2.0.0"
   },
   "devDependencies": {
