@@ -29,14 +29,14 @@
     "exorcist": "^1.0.0",
     "expect": "1.20.1",
     "express": "4.14.0",
-    "gulp": "3.9.1",
+    "gulp": "4.0.2",
     "gulp-concat": "^2.6.1",
     "gulp-streamify": "1.0.2",
     "gulp-uglify": "^1.5.4",
-    "mocha": "2.5.3",
+    "mocha": "10.1.0",
     "phantomjs-prebuilt": "^2.1.14",
     "sinon": "1.17.4",
     "vinyl-source-stream": "1.1.0",
-    "watchify": "2.4.0"
+    "watchify": "4.0.0"
   }
 }
